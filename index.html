@@ -79,17 +79,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
 .sw{display:none;padding:12px;border-top:1px solid var(--bd)}
 .grp.open .sw{display:block}
 .sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:6px}
-.stk{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px 6px;border-radius:10px;border:1px solid var(--bd);cursor:pointer;background:var(--dk3);transition:all .15s;user-select:none;position:relative}
+.stk{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px 18px;border-radius:10px;border:1px solid var(--bd);cursor:pointer;background:var(--dk3);transition:all .15s;user-select:none;position:relative}
 .stk:hover{border-color:var(--bd2);transform:translateY(-1px)}
 .stk.tenho{background:rgba(0,196,106,.12);border-color:rgba(0,196,106,.5)}
 .stk.repetida{background:rgba(255,210,63,.1);border-color:rgba(255,210,63,.5)}
-.si{width:24px;height:18px;border-radius:2px;object-fit:cover}.sn{font-size:11px;font-weight:500;color:var(--mt)}
+.si{width:24px;height:18px;border-radius:2px;object-fit:cover;-webkit-user-drag:none;user-select:none}
+.si img{pointer-events:none}.sn{font-size:11px;font-weight:500;color:var(--mt)}
 .stk.tenho .sn{color:var(--g)}.stk.repetida .sn{color:var(--gold)}
+.qty-ctrl{position:absolute;bottom:3px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:3px}
+.qty-btn{width:14px;height:14px;border-radius:50%;border:1px solid rgba(255,210,63,.6);background:rgba(255,210,63,.1);color:var(--gold);font-size:11px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;font-family:'DM Sans',sans-serif;transition:background .1s}
+.qty-btn:hover{background:rgba(255,210,63,.3)}
+.qty-num{font-size:10px;font-weight:500;color:var(--gold);min-width:12px;text-align:center}
 .rb{position:absolute;top:3px;right:3px;background:var(--gold);color:#000;font-size:9px;font-weight:500;border-radius:99px;padding:1px 4px;line-height:1.4}
-.qty-ctrl{display:flex;align-items:center;gap:4px;margin-top:2px}
-.qty-btn{width:18px;height:18px;border-radius:50%;border:1px solid rgba(255,210,63,.5);background:transparent;color:var(--gold);font-size:13px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;font-family:'DM Sans',sans-serif;transition:background .1s}
-.qty-btn:hover{background:rgba(255,210,63,.15)}
-.qty-num{font-size:11px;font-weight:500;color:var(--gold);min-width:14px;text-align:center}
 .cmenu{position:fixed;background:var(--sf2);border:1px solid var(--bd2);border-radius:12px;padding:6px;z-index:1000;display:none;flex-direction:column;gap:2px;min-width:175px;box-shadow:0 8px 32px rgba(0,0,0,.5)}
 .cmenu.show{display:flex}
 .cmi{padding:8px 12px;font-size:13px;border-radius:8px;cursor:pointer;color:var(--tx);transition:background .1s;display:flex;align-items:center;gap:8px}
@@ -231,22 +232,22 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const sb=supabase.createClient(SB_URL,SB_KEY);
 
 const SELS=[
-  {p:"Brasil",f:"🇧🇷",c:"BR"},{p:"Argentina",f:"🇦🇷",c:"AR"},{p:"Franca",f:"🇫🇷",c:"FR"},
-  {p:"Alemanha",f:"🇩🇪",c:"DE"},{p:"Espanha",f:"🇪🇸",c:"ES"},{p:"Portugal",f:"🇵🇹",c:"PT"},
-  {p:"Holanda",f:"🇳🇱",c:"NL"},{p:"Belgica",f:"🇧🇪",c:"BE"},{p:"Croatia",f:"🇭🇷",c:"HR"},
-  {p:"Uruguai",f:"🇺🇾",c:"UY"},{p:"Colombia",f:"🇨🇴",c:"CO"},{p:"Mexico",f:"🇲🇽",c:"MX"},
-  {p:"EUA",f:"🇺🇸",c:"US"},{p:"Canada",f:"🇨🇦",c:"CA"},{p:"Marrocos",f:"🇲🇦",c:"MA"},
-  {p:"Senegal",f:"🇸🇳",c:"SN"},{p:"Japao",f:"🇯🇵",c:"JP"},{p:"Coreia do Sul",f:"🇰🇷",c:"KR"},
-  {p:"Australia",f:"🇦🇺",c:"AU"},{p:"Ira",f:"🇮🇷",c:"IR"},{p:"Arabia Saudita",f:"🇸🇦",c:"SA"},
-  {p:"Suica",f:"🇨🇭",c:"CH"},{p:"Serbia",f:"🇷🇸",c:"RS"},{p:"Polonia",f:"🇵🇱",c:"PL"},
-  {p:"Equador",f:"🇪🇨",c:"EC"},{p:"Ghana",f:"🇬🇭",c:"GH"},{p:"Camaroes",f:"🇨🇲",c:"CM"},
-  {p:"Nigeria",f:"🇳🇬",c:"NG"},{p:"Costa Rica",f:"🇨🇷",c:"CR"},{p:"Panama",f:"🇵🇦",c:"PA"},
-  {p:"Venezuela",f:"🇻🇪",c:"VE"},{p:"Chile",f:"🇨🇱",c:"CL"},{p:"Peru",f:"🇵🇪",c:"PE"},
-  {p:"Algeria",f:"🇩🇿",c:"DZ"},{p:"Egito",f:"🇪🇬",c:"EG"},{p:"Turquia",f:"🇹🇷",c:"TR"},
-  {p:"Rep. Tcheca",f:"🇨🇿",c:"CZ"},{p:"Dinamarca",f:"🇩🇰",c:"DK"},{p:"Escocia",f:"🏴󠁧󠁢󠁳󠁣󠁴󠁿",c:"GB"},
-  {p:"Nova Zelandia",f:"🇳🇿",c:"NZ"},{p:"Paraguai",f:"🇵🇾",c:"PY"},{p:"Bolivia",f:"🇧🇴",c:"BO"},
-  {p:"Honduras",f:"🇭🇳",c:"HN"},{p:"Jamaica",f:"🇯🇲",c:"JM"},{p:"Qatar",f:"🇶🇦",c:"QA"},
-  {p:"Quirguistao",f:"🇰🇬",c:"KG"},{p:"Indonesia",f:"🇮🇩",c:"ID"},{p:"Rep. Dominicana",f:"🇩🇴",c:"DO"}
+  {p:"Alemanha",f:"🇩🇪",c:"DE"},{p:"Algeria",f:"🇩🇿",c:"DZ"},{p:"Arabia Saudita",f:"🇸🇦",c:"SA"},
+  {p:"Argentina",f:"🇦🇷",c:"AR"},{p:"Australia",f:"🇦🇺",c:"AU"},{p:"Belgica",f:"🇧🇪",c:"BE"},
+  {p:"Bolivia",f:"🇧🇴",c:"BO"},{p:"Brasil",f:"🇧🇷",c:"BR"},{p:"Camaroes",f:"🇨🇲",c:"CM"},
+  {p:"Canada",f:"🇨🇦",c:"CA"},{p:"Chile",f:"🇨🇱",c:"CL"},{p:"Colombia",f:"🇨🇴",c:"CO"},
+  {p:"Coreia do Sul",f:"🇰🇷",c:"KR"},{p:"Costa Rica",f:"🇨🇷",c:"CR"},{p:"Croatia",f:"🇭🇷",c:"HR"},
+  {p:"Dinamarca",f:"🇩🇰",c:"DK"},{p:"Egito",f:"🇪🇬",c:"EG"},{p:"Equador",f:"🇪🇨",c:"EC"},
+  {p:"Escocia",f:"🏴󠁧󠁢󠁳󠁣󠁴󠁿",c:"GB"},{p:"Espanha",f:"🇪🇸",c:"ES"},{p:"EUA",f:"🇺🇸",c:"US"},
+  {p:"Franca",f:"🇫🇷",c:"FR"},{p:"Ghana",f:"🇬🇭",c:"GH"},{p:"Holanda",f:"🇳🇱",c:"NL"},
+  {p:"Honduras",f:"🇭🇳",c:"HN"},{p:"Indonesia",f:"🇮🇩",c:"ID"},{p:"Ira",f:"🇮🇷",c:"IR"},
+  {p:"Jamaica",f:"🇯🇲",c:"JM"},{p:"Japao",f:"🇯🇵",c:"JP"},{p:"Marrocos",f:"🇲🇦",c:"MA"},
+  {p:"Mexico",f:"🇲🇽",c:"MX"},{p:"Nigeria",f:"🇳🇬",c:"NG"},{p:"Nova Zelandia",f:"🇳🇿",c:"NZ"},
+  {p:"Panama",f:"🇵🇦",c:"PA"},{p:"Paraguai",f:"🇵🇾",c:"PY"},{p:"Peru",f:"🇵🇪",c:"PE"},
+  {p:"Polonia",f:"🇵🇱",c:"PL"},{p:"Portugal",f:"🇵🇹",c:"PT"},{p:"Qatar",f:"🇶🇦",c:"QA"},
+  {p:"Quirguistao",f:"🇰🇬",c:"KG"},{p:"Rep. Dominicana",f:"🇩🇴",c:"DO"},{p:"Rep. Tcheca",f:"🇨🇿",c:"CZ"},
+  {p:"Senegal",f:"🇸🇳",c:"SN"},{p:"Serbia",f:"🇷🇸",c:"RS"},{p:"Suica",f:"🇨🇭",c:"CH"},
+  {p:"Turquia",f:"🇹🇷",c:"TR"},{p:"Uruguai",f:"🇺🇾",c:"UY"},{p:"Venezuela",f:"🇻🇪",c:"VE"}
 ];
 const QTD=20,TOTAL=SELS.length*QTD;
 let user=null,state={},filter='all',openGrps=new Set(),openAmigos=new Set();
@@ -381,13 +382,13 @@ function renderGroups(){
       const{status:st,qty}=state[gi][i];
       if(filter==='tenho'&&st==='vazia')continue;if(filter==='falta'&&st!=='vazia')continue;
       html+='<div class="stk'+(st!=='vazia'?' '+st:'')+'" id="stk_'+gi+'_'+i+'">';
-      html+='<img class="si" src="https://flagcdn.com/24x18/'+s.c.toLowerCase()+'.png" width="24" height="18" onclick="quickToggle('+gi+','+i+')" style="cursor:pointer;opacity:'+(st==='vazia'?'.25':'1')+';border-radius:2px" onerror="this.outerHTML=\'<span class=si style=cursor:pointer>'+s.c+'</span>\'"/>';
+      html+='<img class="si" src="https://flagcdn.com/24x18/'+s.c.toLowerCase()+'.png" width="24" height="18" onclick="quickToggle('+gi+','+i+')" oncontextmenu="openMenu(event,'+gi+','+i+')" ontouchstart="startLP(event,'+gi+','+i+')" ontouchend="cancelLP()" ontouchmove="cancelLP()" style="cursor:pointer;opacity:'+(st==='vazia'?'.25':'1')+';border-radius:2px;-webkit-user-drag:none;pointer-events:auto" draggable="false" onerror="this.outerHTML=\'<span class=si style=cursor:pointer>'+s.c+'</span>\'"/>';
       html+='<span class="sn" oncontextmenu="openMenu(event,'+gi+','+i+')" ontouchstart="startLP(event,'+gi+','+i+')" ontouchend="cancelLP()" ontouchmove="cancelLP()">'+i+'</span>';
       if(st==='repetida'){
-        html+='<div class="qty-ctrl" onclick="event.stopPropagation()">';
-        html+='<button class="qty-btn" onclick="changeQty('+gi+','+i+',-1)">-</button>';
+        html+='<div class="qty-ctrl">';
+        html+='<button class="qty-btn" onclick="event.stopPropagation();changeQty('+gi+','+i+',-1)">-</button>';
         html+='<span class="qty-num" id="qty_'+gi+'_'+i+'">'+qty+'</span>';
-        html+='<button class="qty-btn" onclick="changeQty('+gi+','+i+',1)">+</button>';
+        html+='<button class="qty-btn" onclick="event.stopPropagation();changeQty('+gi+','+i+',1)">+</button>';
         html+='</div>';
       }
       html+='</div>';
@@ -418,7 +419,7 @@ function refreshStk(gi,i){
   const old=el.querySelector('.qty-ctrl');if(old)old.remove();
   if(st==='repetida'){
     const div=document.createElement('div');div.className='qty-ctrl';div.onclick=e=>e.stopPropagation();
-    div.innerHTML='<button class="qty-btn" onclick="changeQty('+gi+','+i+',-1)">-</button><span class="qty-num" id="qty_'+gi+'_'+i+'">'+qty+'</span><button class="qty-btn" onclick="changeQty('+gi+','+i+',1)">+</button>';
+    div.innerHTML='<button class="qty-btn" onclick="event.stopPropagation();changeQty('+gi+','+i+',-1)">-</button><span class="qty-num" id="qty_'+gi+'_'+i+'">'+qty+'</span><button class="qty-btn" onclick="event.stopPropagation();changeQty('+gi+','+i+',1)">+</button>';
     el.appendChild(div);
   }
 }
