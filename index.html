@@ -6,7 +6,7 @@
 <title>Album Copa 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--g:#00C46A;--gold:#FFD23F;--amb:#FFAA00;--red:#FF4D4D;--dk:#0A0F0D;--dk3:#1A2118;--sf:#1F2B22;--sf2:#243029;--bd:rgba(255,255,255,0.07);--bd2:rgba(255,255,255,0.14);--tx:#E8EDE9;--mt:#7A9480;}
@@ -69,7 +69,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
 .grp{background:var(--sf);border:1px solid var(--bd);border-radius:14px;overflow:hidden}
 .gh{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;transition:background .15s}
 .gh:hover{background:var(--sf2)}
-.fl{font-size:22px;line-height:1}
+.fl{width:24px;height:18px;border-radius:2px;object-fit:cover;flex-shrink:0}
 .gn{font-size:14px;font-weight:500;flex:1}
 .gc{font-size:12px;color:var(--mt)}
 .gmb{width:48px;height:4px;background:var(--dk3);border-radius:99px;overflow:hidden}
@@ -83,9 +83,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
 .stk:hover{border-color:var(--bd2);transform:translateY(-1px)}
 .stk.tenho{background:rgba(0,196,106,.12);border-color:rgba(0,196,106,.5)}
 .stk.repetida{background:rgba(255,210,63,.1);border-color:rgba(255,210,63,.5)}
-.si{font-size:16px}.sn{font-size:11px;font-weight:500;color:var(--mt)}
+.si{width:24px;height:18px;border-radius:2px;object-fit:cover}.sn{font-size:11px;font-weight:500;color:var(--mt)}
 .stk.tenho .sn{color:var(--g)}.stk.repetida .sn{color:var(--gold)}
 .rb{position:absolute;top:3px;right:3px;background:var(--gold);color:#000;font-size:9px;font-weight:500;border-radius:99px;padding:1px 4px;line-height:1.4}
+.qty-ctrl{display:flex;align-items:center;gap:4px;margin-top:2px}
+.qty-btn{width:18px;height:18px;border-radius:50%;border:1px solid rgba(255,210,63,.5);background:transparent;color:var(--gold);font-size:13px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;font-family:'DM Sans',sans-serif;transition:background .1s}
+.qty-btn:hover{background:rgba(255,210,63,.15)}
+.qty-num{font-size:11px;font-weight:500;color:var(--gold);min-width:14px;text-align:center}
 .cmenu{position:fixed;background:var(--sf2);border:1px solid var(--bd2);border-radius:12px;padding:6px;z-index:1000;display:none;flex-direction:column;gap:2px;min-width:175px;box-shadow:0 8px 32px rgba(0,0,0,.5)}
 .cmenu.show{display:flex}
 .cmi{padding:8px 12px;font-size:13px;border-radius:8px;cursor:pointer;color:var(--tx);transition:background .1s;display:flex;align-items:center;gap:8px}
@@ -131,61 +135,38 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
 </style>
 </head>
 <body>
-
 <div id="loading"><div class="spin"></div><span style="font-size:13px;color:var(--mt)">Carregando...</span></div>
 
-<!-- CADASTRO -->
-<div class="auth-screen" id="screen-cadastro">
-  <div class="abox">
-    <div class="brand">Album digital</div>
-    <h1>COPA<br><span>2026</span></h1>
-    <p class="sub">Crie sua conta para salvar seu album e trocar figurinhas</p>
-    <h2>Criar conta</h2>
-    <div class="msg-box" id="msg-cad"></div>
-    <div class="field"><label>Seu apelido</label><input type="text" id="cad-nome" placeholder="Ex: Vini, Joao..." maxlength="30"/></div>
-    <div class="field"><label>Email</label><input type="email" id="cad-email" placeholder="seu@email.com"/></div>
-    <div class="field"><label>Senha</label><input type="password" id="cad-senha" placeholder="Minimo 6 caracteres"/></div>
-    <button class="btn-pri" id="btn-cad" onclick="cadastrar()">Criar conta</button>
-    <p class="auth-link">Ja tem conta? <a onclick="showScreen('login')">Entrar</a></p>
-  </div>
-</div>
-
-<!-- LOGIN -->
-<div class="auth-screen" id="screen-login">
-  <div class="abox">
-    <div class="brand">Album digital</div>
-    <h1>COPA<br><span>2026</span></h1>
-    <p class="sub">Entre para ver seu album e trocar figurinhas</p>
-    <h2>Entrar</h2>
-    <div class="msg-box" id="msg-log"></div>
-    <div class="field"><label>Email</label><input type="email" id="log-email" placeholder="seu@email.com"/></div>
-    <div class="field"><label>Senha</label><input type="password" id="log-senha" placeholder="Sua senha" onkeydown="if(event.key==='Enter')login()"/></div>
-    <button class="btn-pri" id="btn-log" onclick="login()">Entrar</button>
-    <p class="auth-link" style="margin-top:.5rem"><a onclick="showScreen('reset')">Esqueci minha senha</a></p>
-    <p class="auth-link">Nao tem conta? <a onclick="showScreen('cadastro')">Criar conta</a></p>
-  </div>
-</div>
-
-<!-- RESET SENHA -->
-<div class="auth-screen" id="screen-reset">
-  <div class="abox">
-    <div class="brand">Album digital</div>
-    <h1>COPA<br><span>2026</span></h1>
-    <p class="sub"></p>
-    <h2>Redefinir senha</h2>
-    <div class="msg-box" id="msg-rst"></div>
-    <div class="field"><label>Email</label><input type="email" id="rst-email" placeholder="seu@email.com"/></div>
-    <button class="btn-pri" id="btn-rst" onclick="resetSenha()">Enviar link</button>
-    <p class="auth-link">Lembrou? <a onclick="showScreen('login')">Voltar ao login</a></p>
+<!-- APELIDO -->
+<div id="screen-apelido" style="display:none;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:2rem;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(0,196,106,.12),transparent 60%)">
+  <div style="width:100%;max-width:360px">
+    <div style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--g);margin-bottom:.5rem">Album digital</div>
+    <h1 style="font-family:'Bebas Neue',sans-serif;font-size:4rem;line-height:.9;color:#fff;margin-bottom:.25rem">COPA<br><span style="color:var(--gold)">2026</span></h1>
+    <p style="font-size:13px;color:var(--mt);margin:.5rem 0 2rem">Entre com seu apelido para salvar seu album</p>
+    <div style="margin-bottom:12px">
+      <label style="display:block;font-size:12px;color:var(--mt);margin-bottom:5px;letter-spacing:.04em">Seu apelido</label>
+      <input type="text" id="inp-nome" placeholder="Ex: Vini, Joao..." maxlength="30"
+        style="width:100%;background:var(--sf);border:1px solid var(--bd2);border-radius:12px;padding:12px 16px;font-size:15px;color:var(--tx);font-family:'DM Sans',sans-serif;outline:none;"
+        onkeydown="if(event.key==='Enter')entrar()" onfocus="this.style.borderColor='var(--g)'" onblur="this.style.borderColor='var(--bd2)'"/>
+    </div>
+    <div id="msg-ap" style="display:none;padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:14px;background:rgba(255,77,77,.1);border:1px solid rgba(255,77,77,.3);color:var(--red)"></div>
+    <button id="btn-entrar" onclick="entrar()"
+      style="width:100%;padding:12px;background:var(--g);color:#000;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;border:none;border-radius:12px;cursor:pointer;">
+      Entrar →
+    </button>
+    <div id="usuarios-lista" style="display:none;margin-top:1.5rem">
+      <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mt);margin-bottom:8px">Ou continue como:</div>
+      <div id="usuarios-items"></div>
+    </div>
   </div>
 </div>
 
 <!-- APP -->
-<div id="app">
+<div id="app" style="display:none">
   <div class="hero">
     <div class="hero-top">
       <div class="hero-user">Ola, <strong id="unome"></strong></div>
-      <button class="btn-sair" onclick="sair()">Sair</button>
+      <button class="btn-sair" onclick="sair()">Trocar</button>
     </div>
     <h1>COPA <span>2026</span></h1>
   </div>
@@ -247,129 +228,114 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
 <script>
 const SB_URL='https://zucqfvfkdnbcbyyuepky.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1Y3FmdmZrZG5iY2J5eXVlcGt5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1NjA2NTEsImV4cCI6MjA5MzEzNjY1MX0.8j_vQbMvGoahUGznzUaZjEbs74dmNrqeUwT8M3vB9lg';
-const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{autoRefreshToken:true,persistSession:true}});
+const sb=supabase.createClient(SB_URL,SB_KEY);
 
 const SELS=[
-  {p:"Brasil",f:"🇧🇷"},{p:"Argentina",f:"🇦🇷"},{p:"Franca",f:"🇫🇷"},
-  {p:"Alemanha",f:"🇩🇪"},{p:"Espanha",f:"🇪🇸"},{p:"Portugal",f:"🇵🇹"},
-  {p:"Holanda",f:"🇳🇱"},{p:"Belgica",f:"🇧🇪"},{p:"Croatia",f:"🇭🇷"},
-  {p:"Uruguai",f:"🇺🇾"},{p:"Colombia",f:"🇨🇴"},{p:"Mexico",f:"🇲🇽"},
-  {p:"EUA",f:"🇺🇸"},{p:"Canada",f:"🇨🇦"},{p:"Marrocos",f:"🇲🇦"},
-  {p:"Senegal",f:"🇸🇳"},{p:"Japao",f:"🇯🇵"},{p:"Coreia do Sul",f:"🇰🇷"},
-  {p:"Australia",f:"🇦🇺"},{p:"Ira",f:"🇮🇷"},{p:"Arabia Saudita",f:"🇸🇦"},
-  {p:"Suica",f:"🇨🇭"},{p:"Serbia",f:"🇷🇸"},{p:"Polonia",f:"🇵🇱"},
-  {p:"Equador",f:"🇪🇨"},{p:"Ghana",f:"🇬🇭"},{p:"Camaroes",f:"🇨🇲"},
-  {p:"Nigeria",f:"🇳🇬"},{p:"Costa Rica",f:"🇨🇷"},{p:"Panama",f:"🇵🇦"},
-  {p:"Venezuela",f:"🇻🇪"},{p:"Chile",f:"🇨🇱"},{p:"Peru",f:"🇵🇪"},
-  {p:"Algeria",f:"🇩🇿"},{p:"Egito",f:"🇪🇬"},{p:"Turquia",f:"🇹🇷"},
-  {p:"Rep. Tcheca",f:"🇨🇿"},{p:"Dinamarca",f:"🇩🇰"},{p:"Escocia",f:"🏴󠁧󠁢󠁳󠁣󠁴󠁿"},
-  {p:"Nova Zelandia",f:"🇳🇿"},{p:"Paraguai",f:"🇵🇾"},{p:"Bolivia",f:"🇧🇴"},
-  {p:"Honduras",f:"🇭🇳"},{p:"Jamaica",f:"🇯🇲"},{p:"Qatar",f:"🇶🇦"},
-  {p:"Quirguistao",f:"🇰🇬"},{p:"Indonesia",f:"🇮🇩"},{p:"Rep. Dominicana",f:"🇩🇴"}
+  {p:"Brasil",f:"🇧🇷",c:"BR"},{p:"Argentina",f:"🇦🇷",c:"AR"},{p:"Franca",f:"🇫🇷",c:"FR"},
+  {p:"Alemanha",f:"🇩🇪",c:"DE"},{p:"Espanha",f:"🇪🇸",c:"ES"},{p:"Portugal",f:"🇵🇹",c:"PT"},
+  {p:"Holanda",f:"🇳🇱",c:"NL"},{p:"Belgica",f:"🇧🇪",c:"BE"},{p:"Croatia",f:"🇭🇷",c:"HR"},
+  {p:"Uruguai",f:"🇺🇾",c:"UY"},{p:"Colombia",f:"🇨🇴",c:"CO"},{p:"Mexico",f:"🇲🇽",c:"MX"},
+  {p:"EUA",f:"🇺🇸",c:"US"},{p:"Canada",f:"🇨🇦",c:"CA"},{p:"Marrocos",f:"🇲🇦",c:"MA"},
+  {p:"Senegal",f:"🇸🇳",c:"SN"},{p:"Japao",f:"🇯🇵",c:"JP"},{p:"Coreia do Sul",f:"🇰🇷",c:"KR"},
+  {p:"Australia",f:"🇦🇺",c:"AU"},{p:"Ira",f:"🇮🇷",c:"IR"},{p:"Arabia Saudita",f:"🇸🇦",c:"SA"},
+  {p:"Suica",f:"🇨🇭",c:"CH"},{p:"Serbia",f:"🇷🇸",c:"RS"},{p:"Polonia",f:"🇵🇱",c:"PL"},
+  {p:"Equador",f:"🇪🇨",c:"EC"},{p:"Ghana",f:"🇬🇭",c:"GH"},{p:"Camaroes",f:"🇨🇲",c:"CM"},
+  {p:"Nigeria",f:"🇳🇬",c:"NG"},{p:"Costa Rica",f:"🇨🇷",c:"CR"},{p:"Panama",f:"🇵🇦",c:"PA"},
+  {p:"Venezuela",f:"🇻🇪",c:"VE"},{p:"Chile",f:"🇨🇱",c:"CL"},{p:"Peru",f:"🇵🇪",c:"PE"},
+  {p:"Algeria",f:"🇩🇿",c:"DZ"},{p:"Egito",f:"🇪🇬",c:"EG"},{p:"Turquia",f:"🇹🇷",c:"TR"},
+  {p:"Rep. Tcheca",f:"🇨🇿",c:"CZ"},{p:"Dinamarca",f:"🇩🇰",c:"DK"},{p:"Escocia",f:"🏴󠁧󠁢󠁳󠁣󠁴󠁿",c:"GB"},
+  {p:"Nova Zelandia",f:"🇳🇿",c:"NZ"},{p:"Paraguai",f:"🇵🇾",c:"PY"},{p:"Bolivia",f:"🇧🇴",c:"BO"},
+  {p:"Honduras",f:"🇭🇳",c:"HN"},{p:"Jamaica",f:"🇯🇲",c:"JM"},{p:"Qatar",f:"🇶🇦",c:"QA"},
+  {p:"Quirguistao",f:"🇰🇬",c:"KG"},{p:"Indonesia",f:"🇮🇩",c:"ID"},{p:"Rep. Dominicana",f:"🇩🇴",c:"DO"}
 ];
 const QTD=20,TOTAL=SELS.length*QTD;
-let user=null,perfil=null,state={},filter='all',openGrps=new Set(),openAmigos=new Set();
-let menuTarget=null,saveQueue=new Map(),saveTimer=null,lpTimer=null;
+let user=null,state={},filter='all',openGrps=new Set(),openAmigos=new Set();
+let menuTarget=null,saveQueue=new Map(),saveTimer=null,lpTimer=null,allUsers=[];
+
+function initState(){
+  SELS.forEach((_,gi)=>{state[gi]={};for(let i=1;i<=QTD;i++)state[gi][i]={status:'vazia',qty:1};});
+}
 
 // ── INIT ──
 async function init(){
-  const{data:{session}}=await sb.auth.getSession();
-  if(session){user=session.user;await afterLogin();}
-  else{
-    document.getElementById('loading').style.display='none';
-    showScreen('login');
-  }
-}
+  // Carrega lista de usuarios existentes
+  const{data}=await sb.from('usuarios').select('id,nome').order('created_at',{ascending:false}).limit(20);
+  allUsers=data||[];
 
-function showScreen(s){
-  ['cadastro','login','reset'].forEach(id=>{
-    document.getElementById('screen-'+id).style.display=id===s?'flex':'none';
-  });
-}
-
-function setMsg(id,txt,tipo){
-  const el=document.getElementById(id);
-  el.textContent=txt;el.className='msg-box '+(tipo||'err');el.style.display=txt?'block':'none';
-}
-
-// ── AUTH ──
-async function cadastrar(){
-  const nome=document.getElementById('cad-nome').value.trim();
-  const email=document.getElementById('cad-email').value.trim();
-  const senha=document.getElementById('cad-senha').value;
-  if(!nome||!email||!senha){setMsg('msg-cad','Preencha todos os campos.');return;}
-  if(senha.length<6){setMsg('msg-cad','Senha deve ter ao menos 6 caracteres.');return;}
-  const btn=document.getElementById('btn-cad');btn.disabled=true;btn.textContent='Criando...';
-  setMsg('msg-cad','');
-
-  const{data,error}=await sb.auth.signUp({email,password:senha,options:{data:{nome},emailRedirectTo:window.location.href}});
-  if(error){setMsg('msg-cad',error.message);btn.disabled=false;btn.textContent='Criar conta';return;}
-
-  // Cria perfil publico
-  if(data.user){
-    await sb.from('perfis').upsert({id:data.user.id,nome});
+  // Verifica se tem usuario salvo localmente
+  const saved=localStorage.getItem('copa26-uid');
+  if(saved){
+    const u=allUsers.find(x=>x.id===saved);
+    if(u){await entrarComo(u.id,u.nome);return;}
   }
 
-  setMsg('msg-cad','Conta criada! Verifique seu email para confirmar.','ok');
-  btn.disabled=false;btn.textContent='Criar conta';
-}
-
-async function login(){
-  const email=document.getElementById('log-email').value.trim();
-  const senha=document.getElementById('log-senha').value;
-  if(!email||!senha){setMsg('msg-log','Preencha email e senha.');return;}
-  const btn=document.getElementById('btn-log');btn.disabled=true;btn.textContent='Entrando...';
-  setMsg('msg-log','');
-
-  const{data,error}=await sb.auth.signInWithPassword({email,password:senha});
-  if(error){setMsg('msg-log','Email ou senha incorretos.');btn.disabled=false;btn.textContent='Entrar';return;}
-  user=data.user;await afterLogin();
-}
-
-async function resetSenha(){
-  const email=document.getElementById('rst-email').value.trim();
-  if(!email){setMsg('msg-rst','Informe seu email.');return;}
-  const btn=document.getElementById('btn-rst');btn.disabled=true;btn.textContent='Enviando...';
-  setMsg('msg-rst','');
-  const{error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:window.location.href});
-  if(error){setMsg('msg-rst',error.message);btn.disabled=false;btn.textContent='Enviar link';return;}
-  setMsg('msg-rst','Link enviado! Verifique seu email.','ok');
-  btn.disabled=false;btn.textContent='Enviar link';
-}
-
-async function sair(){await sb.auth.signOut();user=null;perfil=null;state={};showScreen('login');document.getElementById('app').style.display='none';}
-
-async function afterLogin(){
-  // Busca perfil
-  const{data:p}=await sb.from('perfis').select('*').eq('id',user.id).single();
-  if(p)perfil=p;
-  else{
-    const nome=user.user_metadata?.nome||user.email.split('@')[0];
-    await sb.from('perfis').upsert({id:user.id,nome});
-    perfil={id:user.id,nome};
-  }
-  initState();
-  const{data:figs}=await sb.from('figurinhas').select('selecao_idx,numero,status').eq('usuario_id',user.id);
-  if(figs)figs.forEach(f=>{state[f.selecao_idx][f.numero]=f.status;});
   document.getElementById('loading').style.display='none';
-  ['cadastro','login','reset'].forEach(s=>document.getElementById('screen-'+s).style.display='none');
-  document.getElementById('unome').textContent=perfil.nome;
+  document.getElementById('screen-apelido').style.display='flex';
+
+  if(allUsers.length>0){
+    document.getElementById('usuarios-lista').style.display='block';
+    document.getElementById('usuarios-items').innerHTML=allUsers.map(u=>
+      `<div onclick="entrarComo('${u.id}','${u.nome.replace(/'/g,"\'")}')"
+        style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--sf);border:1px solid var(--bd);border-radius:10px;margin-bottom:6px;cursor:pointer;">
+        <div style="width:32px;height:32px;border-radius:50%;background:rgba(0,196,106,.2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;color:var(--g)">${u.nome[0].toUpperCase()}</div>
+        <span style="font-size:14px;flex:1">${u.nome}</span>
+        <span style="font-size:12px;color:var(--mt)">continuar →</span>
+      </div>`
+    ).join('');
+  }
+}
+
+async function entrar(){
+  const nome=document.getElementById('inp-nome').value.trim();
+  if(!nome){showMsg('Informe seu apelido.');return;}
+  const btn=document.getElementById('btn-entrar');
+  btn.disabled=true;btn.textContent='Entrando...';
+
+  // Verifica se ja existe
+  const ex=allUsers.find(u=>u.nome.toLowerCase()===nome.toLowerCase());
+  if(ex){await entrarComo(ex.id,ex.nome);return;}
+
+  // Cria novo usuario
+  const{data,error}=await sb.from('usuarios').insert({nome}).select().single();
+  if(error||!data){showMsg('Erro ao entrar. Tente novamente.');btn.disabled=false;btn.textContent='Entrar →';return;}
+  await entrarComo(data.id,data.nome);
+}
+
+async function entrarComo(id,nome){
+  user={id,nome};
+  localStorage.setItem('copa26-uid',id);
+  initState();
+  const{data:figs}=await sb.from('figurinhas').select('selecao_idx,numero,status,quantidade').eq('usuario_id',id);
+  if(figs)figs.forEach(f=>{state[f.selecao_idx][f.numero]={status:f.status,qty:f.quantidade||1};});
+  document.getElementById('loading').style.display='none';
+  document.getElementById('screen-apelido').style.display='none';
+  document.getElementById('unome').textContent=nome;
   document.getElementById('app').style.display='block';
   updateStats();renderGroups();
 }
 
-function initState(){
-  SELS.forEach((_,gi)=>{state[gi]={};for(let i=1;i<=QTD;i++)state[gi][i]='vazia';});
+function sair(){
+  localStorage.removeItem('copa26-uid');
+  location.reload();
+}
+
+function showMsg(txt){
+  const el=document.getElementById('msg-ap');
+  el.textContent=txt;el.style.display='block';
+  document.getElementById('btn-entrar').disabled=false;
+  document.getElementById('btn-entrar').textContent='Entrar →';
 }
 
 // ── SAVE ──
 function queueSave(gi,i){
-  saveQueue.set(gi+'_'+i,{gi,i,status:state[gi][i]});
+  saveQueue.set(gi+'_'+i,{gi,i,status:state[gi][i].status,qty:state[gi][i].qty});
   clearTimeout(saveTimer);saveTimer=setTimeout(flushSave,800);setSaving(true);
 }
 async function flushSave(){
   const items=Array.from(saveQueue.values());saveQueue.clear();
-  const rows=items.map(({gi,i,status})=>({usuario_id:user.id,selecao_idx:gi,numero:i,status,updated_at:new Date().toISOString()}));
+  const rows=items.map(({gi,i,status,qty})=>({
+    usuario_id:user.id,selecao_idx:gi,numero:i,status,quantidade:qty,updated_at:new Date().toISOString()
+  }));
   await sb.from('figurinhas').upsert(rows,{onConflict:'usuario_id,selecao_idx,numero'});
   setSaving(false);
 }
@@ -388,31 +354,42 @@ function showTab(t){
   if(t==='trocas')renderTrocas();
 }
 
-// ── ALBUM ──
-function tenhoCount(){let c=0;SELS.forEach((_,gi)=>{for(let i=1;i<=QTD;i++)if(state[gi][i]!=='vazia')c++;});return c;}
+// ── STATS ──
+function tenhoCount(){let c=0;SELS.forEach((_,gi)=>{for(let i=1;i<=QTD;i++)if(state[gi][i].status!=='vazia')c++;});return c;}
 function updateStats(){
   const t=tenhoCount(),f=TOTAL-t,p=Math.round(t/TOTAL*100);
   document.getElementById('s-t').textContent=t;document.getElementById('s-f').textContent=f;document.getElementById('s-p').textContent=p+'%';
   document.getElementById('pf').style.width=p+'%';document.getElementById('pl').textContent=t+' de '+TOTAL;document.getElementById('pp').textContent=p+'%';
 }
+
+// ── FILTER ──
 function setFilter(f){filter=f;['all','falta','tenho'].forEach(id=>document.getElementById('f-'+id).classList.toggle('on',id===f));renderGroups();}
+
+// ── GROUPS ──
 function renderGroups(){
   const q=document.getElementById('srch').value.trim().toLowerCase();
   let html='',any=false;
   SELS.forEach((s,gi)=>{
     if(q&&!s.p.toLowerCase().includes(q))return;
-    let ct=0;for(let i=1;i<=QTD;i++)if(state[gi][i]!=='vazia')ct++;
+    let ct=0;for(let i=1;i<=QTD;i++)if(state[gi][i].status!=='vazia')ct++;
     if(filter==='tenho'&&ct===0)return;if(filter==='falta'&&ct===QTD)return;
     any=true;const open=openGrps.has(gi),pct=Math.round(ct/QTD*100);
     html+='<div class="grp'+(open?' open':'')+'" id="grp_'+gi+'">';
-    html+='<div class="gh" onclick="toggleGrp('+gi+')"><span class="fl">'+s.f+'</span><span class="gn">'+s.p+'</span><div class="gmb"><div class="gmf" style="width:'+pct+'%"></div></div><span class="gc">'+ct+'/'+QTD+'</span><span class="chv">v</span></div>';
+    html+='<div class="gh" onclick="toggleGrp('+gi+')"><img class="fl" src="https://flagcdn.com/24x18/'+s.c.toLowerCase()+'.png" width="24" height="18" alt="'+s.p+'" onerror="this.style.display=\'none\'"/><span class="gn">'+s.p+'</span><div class="gmb"><div class="gmf" style="width:'+pct+'%"></div></div><span class="gc">'+ct+'/'+QTD+'</span><span class="chv">▼</span></div>';
     html+='<div class="sw"><div class="sg">';
     for(let i=1;i<=QTD;i++){
-      const st=state[gi][i];
+      const{status:st,qty}=state[gi][i];
       if(filter==='tenho'&&st==='vazia')continue;if(filter==='falta'&&st!=='vazia')continue;
-      html+='<div class="stk'+(st!=='vazia'?' '+st:'')+'" id="stk_'+gi+'_'+i+'" onclick="quickToggle('+gi+','+i+')" oncontextmenu="openMenu(event,'+gi+','+i+')" ontouchstart="startLP(event,'+gi+','+i+')" ontouchend="cancelLP()" ontouchmove="cancelLP()">';
-      html+='<span class="si">'+(st==='vazia'?'o':'*')+'</span><span class="sn">'+i+'</span>';
-      if(st==='repetida')html+='<span class="rb">+1</span>';
+      html+='<div class="stk'+(st!=='vazia'?' '+st:'')+'" id="stk_'+gi+'_'+i+'">';
+      html+='<img class="si" src="https://flagcdn.com/24x18/'+s.c.toLowerCase()+'.png" width="24" height="18" onclick="quickToggle('+gi+','+i+')" style="cursor:pointer;opacity:'+(st==='vazia'?'.25':'1')+';border-radius:2px" onerror="this.outerHTML=\'<span class=si style=cursor:pointer>'+s.c+'</span>\'"/>';
+      html+='<span class="sn" oncontextmenu="openMenu(event,'+gi+','+i+')" ontouchstart="startLP(event,'+gi+','+i+')" ontouchend="cancelLP()" ontouchmove="cancelLP()">'+i+'</span>';
+      if(st==='repetida'){
+        html+='<div class="qty-ctrl" onclick="event.stopPropagation()">';
+        html+='<button class="qty-btn" onclick="changeQty('+gi+','+i+',-1)">-</button>';
+        html+='<span class="qty-num" id="qty_'+gi+'_'+i+'">'+qty+'</span>';
+        html+='<button class="qty-btn" onclick="changeQty('+gi+','+i+',1)">+</button>';
+        html+='</div>';
+      }
       html+='</div>';
     }
     html+='</div></div></div>';
@@ -421,18 +398,34 @@ function renderGroups(){
   document.getElementById('gc').innerHTML=html;
 }
 function toggleGrp(gi){if(openGrps.has(gi))openGrps.delete(gi);else openGrps.add(gi);document.getElementById('grp_'+gi)?.classList.toggle('open',openGrps.has(gi));}
-function quickToggle(gi,i){state[gi][i]=state[gi][i]==='vazia'?'tenho':'vazia';refreshStk(gi,i);updateStats();queueSave(gi,i);}
+function quickToggle(gi,i){
+  const cur=state[gi][i].status;
+  state[gi][i].status=cur==='vazia'?'tenho':'vazia';
+  if(state[gi][i].status==='vazia')state[gi][i].qty=1;
+  refreshStk(gi,i);updateStats();queueSave(gi,i);
+}
+function changeQty(gi,i,delta){
+  const s=state[gi][i];if(s.status!=='repetida')return;
+  s.qty=Math.max(1,s.qty+delta);
+  const el=document.getElementById('qty_'+gi+'_'+i);if(el)el.textContent=s.qty;
+  queueSave(gi,i);
+}
 function refreshStk(gi,i){
   const el=document.getElementById('stk_'+gi+'_'+i);if(!el)return;
-  const st=state[gi][i];el.className='stk'+(st!=='vazia'?' '+st:'');
-  el.querySelector('.si').textContent=st==='vazia'?'o':'*';
-  const rb=el.querySelector('.rb');if(rb)rb.remove();
-  if(st==='repetida'){const b=document.createElement('span');b.className='rb';b.textContent='+1';el.appendChild(b);}
+  const{status:st,qty}=state[gi][i];
+  el.className='stk'+(st!=='vazia'?' '+st:'');
+  const si=el.querySelector('.si');if(si)si.style.opacity=st==='vazia'?'.25':'1';
+  const old=el.querySelector('.qty-ctrl');if(old)old.remove();
+  if(st==='repetida'){
+    const div=document.createElement('div');div.className='qty-ctrl';div.onclick=e=>e.stopPropagation();
+    div.innerHTML='<button class="qty-btn" onclick="changeQty('+gi+','+i+',-1)">-</button><span class="qty-num" id="qty_'+gi+'_'+i+'">'+qty+'</span><button class="qty-btn" onclick="changeQty('+gi+','+i+',1)">+</button>';
+    el.appendChild(div);
+  }
 }
 function startLP(e,gi,i){lpTimer=setTimeout(()=>openMenu(e,gi,i),600);}
 function cancelLP(){clearTimeout(lpTimer);}
 function openMenu(e,gi,i){
-  e.preventDefault();menuTarget={gi,i};const st=state[gi][i];
+  e.preventDefault();menuTarget={gi,i};const st=state[gi][i].status;
   document.getElementById('cm-tenho').style.display=st==='repetida'?'none':'';
   document.getElementById('cm-rep').style.display=st==='tenho'?'':'none';
   const mx=Math.min(e.clientX||(e.touches?.[0]?.clientX||0),window.innerWidth-185);
@@ -441,7 +434,9 @@ function openMenu(e,gi,i){
 }
 function menuAction(a){
   if(!menuTarget)return;const{gi,i}=menuTarget;
-  if(a==='tenho')state[gi][i]='tenho';else if(a==='repetida')state[gi][i]='repetida';else state[gi][i]='vazia';
+  if(a==='tenho'){state[gi][i].status='tenho';state[gi][i].qty=1;}
+  else if(a==='repetida'){state[gi][i].status='repetida';}
+  else{state[gi][i].status='vazia';state[gi][i].qty=1;}
   refreshStk(gi,i);updateStats();queueSave(gi,i);
   if(a==='repetida')showToast('Marcada como repetida!');
   closeMenu();
@@ -453,21 +448,25 @@ document.addEventListener('click',e=>{if(!document.getElementById('cmenu').conta
 async function renderTrocas(){
   let repHTML='',shareLines=[],hasRep=false;
   SELS.forEach((s,gi)=>{
-    const reps=[];for(let i=1;i<=QTD;i++)if(state[gi][i]==='repetida')reps.push(i);
+    const reps=[];for(let i=1;i<=QTD;i++)if(state[gi][i].status==='repetida')reps.push(i);
     if(!reps.length)return;hasRep=true;
-    shareLines.push(s.f+' '+s.p+': '+reps.join(', '));
-    repHTML+='<div class="repg"><div class="repgh"><span>'+s.f+'</span>'+s.p+'</div><div class="repcs">'+reps.map(n=>'<span class="repc">#'+n+'</span>').join('')+'</div></div>';
+    const repLabels=reps.map(i=>{const qty=state[gi][i].qty;return '#'+i+(qty>1?' x'+qty:'');});
+    shareLines.push(s.f+' '+s.p+': '+repLabels.join(', '));
+    repHTML+='<div class="repg"><div class="repgh"><span>'+s.f+'</span>'+s.p+'</div><div class="repcs">'+reps.map(i=>{const qty=state[gi][i].qty;return '<span class="repc">#'+i+(qty>1?' x'+qty:'')+'</span>';}).join('')+'</div></div>';
   });
   document.getElementById('minhas-reps').innerHTML=hasRep?repHTML:'<div class="empty"><div class="ico">⭐</div><p>Nenhuma repetida ainda.</p></div>';
   const scEl=document.getElementById('sc-txt');
   if(hasRep){const txt='Minhas repetidas - Copa 2026:\n'+shareLines.join('\n');scEl.textContent=txt.replace(/\n/g,' | ');scEl.dataset.full=txt;}
   else{scEl.textContent='Nenhuma repetida ainda';delete scEl.dataset.full;}
 
-  const{data:outros}=await sb.from('perfis').select('id,nome').neq('id',user.id);
+  const{data:outros}=await sb.from('usuarios').select('id,nome').neq('id',user.id);
   if(!outros||!outros.length){document.getElementById('amigos-grid').innerHTML='<div class="empty"><div class="ico">👥</div><p>Nenhum amigo cadastrado ainda.<br>Compartilhe o link para eles entrarem!</p></div>';return;}
 
   const mFalta=new Set(),mRep=new Set();
-  SELS.forEach((_,gi)=>{for(let i=1;i<=QTD;i++){if(state[gi][i]==='vazia')mFalta.add(gi+'_'+i);if(state[gi][i]==='repetida')mRep.add(gi+'_'+i);}});
+  SELS.forEach((_,gi)=>{for(let i=1;i<=QTD;i++){
+    if(state[gi][i].status==='vazia')mFalta.add(gi+'_'+i);
+    if(state[gi][i].status==='repetida')mRep.add(gi+'_'+i);
+  }});
 
   const{data:figAmigos}=await sb.from('figurinhas').select('usuario_id,selecao_idx,numero,status').in('usuario_id',outros.map(u=>u.id));
 
@@ -476,7 +475,8 @@ async function renderTrocas(){
     const aFigs=figAmigos?.filter(f=>f.usuario_id===amigo.id)||[];
     const aRep=new Set(aFigs.filter(f=>f.status==='repetida').map(f=>f.selecao_idx+'_'+f.numero));
     const aTem=new Set(aFigs.filter(f=>f.status!=='vazia').map(f=>f.selecao_idx+'_'+f.numero));
-    const aFalta=new Set();SELS.forEach((_,gi)=>{for(let i=1;i<=QTD;i++)if(!aTem.has(gi+'_'+i))aFalta.add(gi+'_'+i);});
+    const aFalta=new Set();
+    SELS.forEach((_,gi)=>{for(let i=1;i<=QTD;i++)if(!aTem.has(gi+'_'+i))aFalta.add(gi+'_'+i);});
     const euGanho=[...aRep].filter(k=>mFalta.has(k));
     const euDou=[...mRep].filter(k=>aFalta.has(k));
     const kl=k=>{const[gi,i]=k.split('_');return SELS[gi].f+'#'+i;};
@@ -498,13 +498,6 @@ function copyShare(){
   const el=document.getElementById('sc-txt');if(!el.dataset.full)return;
   navigator.clipboard.writeText(el.dataset.full).then(()=>showToast('Lista copiada!'));
 }
-
-// Handle auth redirect (confirmacao de email / reset de senha)
-sb.auth.onAuthStateChange(async(event,session)=>{
-  if((event==='SIGNED_IN'||event==='TOKEN_REFRESHED')&&session&&!document.getElementById('app').style.display.includes('block')){
-    user=session.user;await afterLogin();
-  }
-});
 
 init();
 </script>
