@@ -770,81 +770,57 @@ function renderGroups(){
 
 /* ── STICKER EVENTS ── */
 function attachStickerEvents(container){
-  // Guarda info do toque atual
-  let touchGi=null, touchI=null, touchMoved=false, longPressed=false;
-  let touchStartX=0, touchStartY=0;
+  let lpStart=null, lpMoved=false, didLongPress=false;
 
   container.addEventListener('touchstart',e=>{
-    // Botões +/- têm handler próprio
-    if(e.target.closest('[data-delta]')) return;
-    const stk=e.target.closest('.stk[data-gi]');
-    if(!stk) return;
-
-    touchGi=parseInt(stk.dataset.gi);
-    touchI=parseInt(stk.dataset.i);
-    touchMoved=false;
-    longPressed=false;
-    touchStartX=e.touches[0].clientX;
-    touchStartY=e.touches[0].clientY;
-
-    // Salva posição para o menu
-    const tx=e.touches[0].clientX;
-    const ty=e.touches[0].clientY;
-
+    const btn=e.target.closest('[data-delta]'); if(btn) return;
+    const stk=e.target.closest('.stk[data-gi]'); if(!stk) return;
+    const gi=parseInt(stk.dataset.gi), i=parseInt(stk.dataset.i);
+    lpMoved=false; didLongPress=false; lpStart=Date.now();
     lpTimer=setTimeout(()=>{
-      if(!touchMoved && touchGi!==null){
-        longPressed=true;
+      if(!lpMoved){
+        didLongPress=true;
         if(navigator.vibrate) navigator.vibrate(40);
-        // Abre menu com a posição salva do touchstart
-        const fakeE={clientX:tx, clientY:ty, cancelable:false, touches:[{clientX:tx,clientY:ty}]};
-        openMenu(fakeE, touchGi, touchI);
+        openMenu(e,gi,i);
+        lpStart=null;
       }
-    },600);
+    },500);
   },{passive:true});
 
   container.addEventListener('touchmove',e=>{
-    if(touchGi===null) return;
-    const dx=Math.abs(e.touches[0].clientX-touchStartX);
-    const dy=Math.abs(e.touches[0].clientY-touchStartY);
-    if(dx>8||dy>8){
-      touchMoved=true;
-      clearTimeout(lpTimer);
-    }
+    // cancela long press se mover mais de 8px
+    const t=e.touches[0];
+    lpMoved=true;
+    clearTimeout(lpTimer);
   },{passive:true});
 
   container.addEventListener('touchend',e=>{
-    // Botões +/-
+    // botões +/-
     const btn=e.target.closest('[data-delta]');
     if(btn){
       e.preventDefault();
       clearTimeout(lpTimer);
       changeQty(parseInt(btn.dataset.gi),parseInt(btn.dataset.i),parseInt(btn.dataset.delta));
-      touchGi=null; return;
+      return;
     }
 
     clearTimeout(lpTimer);
+    const stk=e.target.closest('.stk[data-gi]'); if(!stk) return;
 
-    const gi=touchGi, i=touchI;
-    const wasLong=longPressed;
-    touchGi=null; touchI=null; longPressed=false;
+    // se foi long press, não faz nada no touchend
+    if(didLongPress){ didLongPress=false; lpStart=null; return; }
 
-    if(wasLong) return; // long press já tratado no timer
-    if(touchMoved) return; // foi scroll
-
-    // Toque rápido — toggle
-    e.preventDefault(); // bloqueia click fantasma
-    quickToggle(gi, i);
+    // toque rápido = toggle
+    if(!lpMoved && lpStart && (Date.now()-lpStart)<500){
+      e.preventDefault(); // impede o click fantasma do iOS
+      quickToggle(parseInt(stk.dataset.gi),parseInt(stk.dataset.i));
+    }
+    lpStart=null;
   },{passive:false});
 
-  // Bloqueia o click fantasma que iOS/Android disparam ~300ms depois do touchend
+  // Desktop: click normal (sem touch)
   container.addEventListener('click',e=>{
-    if('ontouchstart' in window){
-      // Em dispositivo touch, só processa clique em botões +/-
-      const btn=e.target.closest('[data-delta]');
-      if(btn){ changeQty(parseInt(btn.dataset.gi),parseInt(btn.dataset.i),parseInt(btn.dataset.delta)); }
-      return;
-    }
-    // Desktop: click normal
+    if('ontouchstart' in window) return; // ignora em touch
     const btn=e.target.closest('[data-delta]');
     if(btn){ changeQty(parseInt(btn.dataset.gi),parseInt(btn.dataset.i),parseInt(btn.dataset.delta)); return; }
     const stk=e.target.closest('.stk[data-gi]');
