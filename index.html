@@ -474,32 +474,62 @@ let menuTarget=null, saveQueue=new Map(), saveTimer=null, lpTimer=null;
 let meusGrupos=[], grupoAtivo=null;
 
 /* ── INIT ── */
-async function init(){
-  const{data:{session}}=await sb.auth.getSession();
-  if(session){
-    user=session.user;
-    await afterLogin();
-  } else {
-    document.getElementById('loading').style.display='none';
-    showScreen('login');
-  }
-}
+let authHandled=false;
 
-/* Escuta mudanças de sessão — redireciona após reset de senha */
-sb.auth.onAuthStateChange(async(event,session)=>{
-  if(event==='PASSWORD_RECOVERY'){
-    // usuário clicou no link de reset — pode mostrar tela de nova senha se quiser
-    // por ora, apenas loga normalmente
-  }
-  if((event==='SIGNED_IN'||event==='TOKEN_REFRESHED')&&session){
-    if(document.getElementById('app').style.display!=='block'){
+async function init(){
+  // Timeout de segurança: se travar por mais de 6s, vai pro login
+  const timeout=setTimeout(()=>{
+    if(!authHandled){
+      authHandled=true;
+      document.getElementById('loading').style.display='none';
+      showScreen('login');
+    }
+  },6000);
+
+  try{
+    const{data:{session},error}=await sb.auth.getSession();
+    clearTimeout(timeout);
+
+    if(error||!session){
+      // Sessão inválida ou expirada — limpa e manda pro login
+      await sb.auth.signOut().catch(()=>{});
+      if(!authHandled){
+        authHandled=true;
+        document.getElementById('loading').style.display='none';
+        showScreen('login');
+      }
+      return;
+    }
+
+    if(!authHandled){
+      authHandled=true;
       user=session.user;
       await afterLogin();
     }
+  }catch(e){
+    clearTimeout(timeout);
+    if(!authHandled){
+      authHandled=true;
+      document.getElementById('loading').style.display='none';
+      showScreen('login');
+    }
   }
-  if(event==='SIGNED_OUT'){
+}
+
+/* Escuta mudanças de sessão */
+sb.auth.onAuthStateChange(async(event,session)=>{
+  if(event==='SIGNED_IN'&&session&&!authHandled){
+    authHandled=true;
+    user=session.user;
+    await afterLogin();
+  }
+  if(event==='TOKEN_REFRESHED'&&session){
+    user=session.user; // atualiza silenciosamente
+  }
+  if(event==='SIGNED_OUT'||(event==='TOKEN_REFRESH_FAILED')){
     user=null; perfil=null; state={};
     document.getElementById('app').style.display='none';
+    authHandled=false;
     showScreen('login');
   }
 });
@@ -611,35 +641,39 @@ function traduzirErro(msg){
 
 /* ── PÓS LOGIN ── */
 async function afterLogin(){
-  // Garante que existe perfil na tabela usuarios
-  const{data:p}=await sb.from('usuarios').select('id,nome').eq('id',user.id).single();
-  if(p){
-    perfil=p;
-  } else {
-    const nome=user.user_metadata?.nome||user.email.split('@')[0];
-    await sb.from('usuarios').upsert({id:user.id,nome});
-    perfil={id:user.id,nome};
+  try{
+    const{data:p}=await sb.from('usuarios').select('id,nome').eq('id',user.id).single();
+    if(p){
+      perfil=p;
+    } else {
+      const nome=user.user_metadata?.nome||user.email.split('@')[0];
+      await sb.from('usuarios').upsert({id:user.id,nome});
+      perfil={id:user.id,nome};
+    }
+    initState();
+    const{data:figs}=await sb.from('figurinhas')
+      .select('selecao_idx,numero,status,quantidade')
+      .eq('usuario_id',user.id);
+    if(figs) figs.forEach(f=>{
+      if(state[f.selecao_idx]&&state[f.selecao_idx][f.numero]!==undefined)
+        state[f.selecao_idx][f.numero]={status:f.status,qty:f.quantidade||1};
+    });
+    document.getElementById('loading').style.display='none';
+    ['cadastro','login','reset'].forEach(s=>
+      document.getElementById('screen-'+s).style.display='none');
+    document.getElementById('unome').textContent=perfil.nome;
+    document.getElementById('app').style.display='block';
+    updateStats();
+    renderGroups();
+    await carregarMeusGrupos();
+  }catch(e){
+    console.error('afterLogin error:',e);
+    await sb.auth.signOut().catch(()=>{});
+    document.getElementById('loading').style.display='none';
+    document.getElementById('app').style.display='none';
+    showScreen('login');
+    authHandled=false;
   }
-
-  // Carrega figurinhas
-  initState();
-  const{data:figs}=await sb.from('figurinhas')
-    .select('selecao_idx,numero,status,quantidade')
-    .eq('usuario_id',user.id);
-  if(figs) figs.forEach(f=>{
-    if(state[f.selecao_idx]&&state[f.selecao_idx][f.numero]!==undefined)
-      state[f.selecao_idx][f.numero]={status:f.status,qty:f.quantidade||1};
-  });
-
-  // Mostra app
-  document.getElementById('loading').style.display='none';
-  ['cadastro','login','reset'].forEach(s=>
-    document.getElementById('screen-'+s).style.display='none');
-  document.getElementById('unome').textContent=perfil.nome;
-  document.getElementById('app').style.display='block';
-  updateStats();
-  renderGroups();
-  await carregarMeusGrupos();
 }
 
 /* ── STATE ── */
