@@ -766,68 +766,56 @@ function renderGroups(){
   const gc=document.getElementById('gc');
   gc.innerHTML=html;
   attachStickerEvents(gc);
+  attachQtyBtns(gc);
 }
 
 /* ── STICKER EVENTS ── */
 function attachStickerEvents(container){
-  let lpStart=null, lpMoved=false, didLongPress=false;
+  let tGi=null, tI=null, tMoved=false, tLong=false, tStartX=0, tStartY=0, tStartMs=0;
 
   container.addEventListener('touchstart',e=>{
-    const btn=e.target.closest('[data-delta]'); if(btn) return;
+    if(e.target.closest('[data-delta]')){ clearTimeout(lpTimer); return; }
     const stk=e.target.closest('.stk[data-gi]'); if(!stk) return;
-    const gi=parseInt(stk.dataset.gi), i=parseInt(stk.dataset.i);
-    lpMoved=false; didLongPress=false; lpStart=Date.now();
+    tGi=parseInt(stk.dataset.gi); tI=parseInt(stk.dataset.i);
+    tMoved=false; tLong=false;
+    tStartX=e.touches[0].clientX; tStartY=e.touches[0].clientY;
+    tStartMs=Date.now();
+    const tx=tStartX, ty=tStartY, gi=tGi, i=tI;
+    clearTimeout(lpTimer);
     lpTimer=setTimeout(()=>{
-      if(!lpMoved){
-        didLongPress=true;
+      if(!tMoved){
+        tLong=true;
         if(navigator.vibrate) navigator.vibrate(40);
-        openMenu(e,gi,i);
-        lpStart=null;
+        openMenu({clientX:tx,clientY:ty,cancelable:false,touches:[{clientX:tx,clientY:ty}]},gi,i);
       }
-    },500);
+    },600);
   },{passive:true});
 
   container.addEventListener('touchmove',e=>{
-    // cancela long press se mover mais de 8px
-    const t=e.touches[0];
-    lpMoved=true;
-    clearTimeout(lpTimer);
+    if(tGi===null) return;
+    const dx=Math.abs(e.touches[0].clientX-tStartX);
+    const dy=Math.abs(e.touches[0].clientY-tStartY);
+    if(dx>8||dy>8){ tMoved=true; clearTimeout(lpTimer); }
   },{passive:true});
 
   container.addEventListener('touchend',e=>{
-    // botões +/-
-    const btn=e.target.closest('[data-delta]');
-    if(btn){
-      e.preventDefault();
-      clearTimeout(lpTimer);
-      changeQty(parseInt(btn.dataset.gi),parseInt(btn.dataset.i),parseInt(btn.dataset.delta));
-      return;
-    }
-
+    // botões +/- são tratados com listeners próprios, ignora aqui
+    if(e.target.closest('[data-delta]')){ clearTimeout(lpTimer); tGi=null; return; }
     clearTimeout(lpTimer);
-    const stk=e.target.closest('.stk[data-gi]'); if(!stk) return;
-
-    // se foi long press, não faz nada no touchend
-    if(didLongPress){ didLongPress=false; lpStart=null; return; }
-
-    // toque rápido = toggle
-    if(!lpMoved && lpStart && (Date.now()-lpStart)<500){
-      e.preventDefault(); // impede o click fantasma do iOS
-      quickToggle(parseInt(stk.dataset.gi),parseInt(stk.dataset.i));
-    }
-    lpStart=null;
+    if(tGi===null) return;
+    const gi=tGi, i=tI; tGi=null; tI=null;
+    if(tLong||tMoved) return;
+    e.preventDefault();
+    quickToggle(gi,i);
   },{passive:false});
 
-  // Desktop: click normal (sem touch)
   container.addEventListener('click',e=>{
-    if('ontouchstart' in window) return; // ignora em touch
-    const btn=e.target.closest('[data-delta]');
-    if(btn){ changeQty(parseInt(btn.dataset.gi),parseInt(btn.dataset.i),parseInt(btn.dataset.delta)); return; }
+    if(e.target.closest('[data-delta]')) return; // tratado com listener próprio
+    if('ontouchstart' in window) return;
     const stk=e.target.closest('.stk[data-gi]');
     if(stk) quickToggle(parseInt(stk.dataset.gi),parseInt(stk.dataset.i));
   });
 
-  // Desktop: botão direito abre menu
   container.addEventListener('contextmenu',e=>{
     const stk=e.target.closest('.stk[data-gi]'); if(!stk) return;
     e.preventDefault();
@@ -847,9 +835,26 @@ function quickToggle(gi,i){
 }
 function changeQty(gi,i,delta){
   const s=state[gi][i]; if(s.status!=='repetida') return;
-  s.qty=Math.max(1,s.qty+delta);
+  s.qty=Math.max(1,(s.qty||1)+delta);
   const el=document.getElementById('qty_'+gi+'_'+i); if(el) el.textContent=s.qty;
   queueSave(gi,i);
+}
+
+function attachQtyBtns(parent){
+  parent.querySelectorAll('.qty-btn').forEach(btn=>{
+    // remove listeners antigos clonando
+    const fresh=btn.cloneNode(true);
+    btn.parentNode.replaceChild(fresh,btn);
+    fresh.addEventListener('touchstart',e=>{e.stopPropagation();},{passive:true});
+    fresh.addEventListener('touchend',e=>{
+      e.preventDefault(); e.stopPropagation();
+      changeQty(parseInt(fresh.dataset.gi),parseInt(fresh.dataset.i),parseInt(fresh.dataset.delta));
+    },{passive:false});
+    fresh.addEventListener('click',e=>{
+      e.stopPropagation();
+      changeQty(parseInt(fresh.dataset.gi),parseInt(fresh.dataset.i),parseInt(fresh.dataset.delta));
+    });
+  });
 }
 function refreshStk(gi,i){
   const el=document.getElementById('stk_'+gi+'_'+i); if(!el) return;
@@ -862,6 +867,7 @@ function refreshStk(gi,i){
     div.className='qty-ctrl'; div.dataset.ctrl='1';
     div.innerHTML=`<button class="qty-btn" data-delta="-1" data-gi="${gi2}" data-i="${i2}">-</button><span class="qty-num" id="qty_${gi2}_${i2}">${qty}</span><button class="qty-btn" data-delta="1" data-gi="${gi2}" data-i="${i2}">+</button>`;
     el.appendChild(div);
+    attachQtyBtns(el);
   }
 }
 
