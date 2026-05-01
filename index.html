@@ -646,6 +646,7 @@ async function afterLogin(){
     document.getElementById('unome').textContent=perfil.nome;
     document.getElementById('app').style.display='block';
     updateStats();
+    attachStickerEvents(document.getElementById('gc'));
     renderGroups();
     await carregarMeusGrupos();
   }catch(e){
@@ -818,7 +819,6 @@ function renderGroups(){
   if(!any) html='<div class="empty"><div class="ico">🔍</div><p>Nenhuma selecao encontrada.</p></div>';
   const gc=document.getElementById('gc');
   gc.innerHTML=html;
-  attachStickerEvents(gc);
   attachQtyBtns(gc);
 }
 
@@ -829,10 +829,12 @@ function attachStickerEvents(container){
   container.addEventListener('touchstart',e=>{
     if(e.target.closest('[data-delta]')){ clearTimeout(lpTimer); return; }
     const stk=e.target.closest('.stk[data-gi]'); if(!stk) return;
-    tGi=parseInt(stk.dataset.gi); tI=parseInt(stk.dataset.i);
+    // preserva gi como string (pode ser 'esp' ou número)
+    const rawGi=stk.dataset.gi;
+    tGi=rawGi==='esp'?'esp':parseInt(rawGi);
+    tI=tGi==='esp'?stk.dataset.i:parseInt(stk.dataset.i);
     tMoved=false; tLong=false;
     tStartX=e.touches[0].clientX; tStartY=e.touches[0].clientY;
-    tStartMs=Date.now();
     const tx=tStartX, ty=tStartY, gi=tGi, i=tI;
     clearTimeout(lpTimer);
     lpTimer=setTimeout(()=>{
@@ -856,7 +858,8 @@ function attachStickerEvents(container){
     if(e.target.closest('[data-delta]')){ clearTimeout(lpTimer); tGi=null; return; }
     clearTimeout(lpTimer);
     if(tGi===null) return;
-    const gi=tGi, i=tI; tGi=null; tI=null;
+    const gi=tGi, i=tI;
+    tGi=null; tI=null;
     if(tLong||tMoved) return;
     e.preventDefault();
     quickToggle(gi,i);
