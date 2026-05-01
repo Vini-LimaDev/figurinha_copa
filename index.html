@@ -447,7 +447,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
 const SB_URL='https://zucqfvfkdnbcbyyuepky.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1Y3FmdmZrZG5iY2J5eXVlcGt5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1NjA2NTEsImV4cCI6MjA5MzEzNjY1MX0.8j_vQbMvGoahUGznzUaZjEbs74dmNrqeUwT8M3vB9lg';
 const sb=supabase.createClient(SB_URL,SB_KEY,{
-  auth:{autoRefreshToken:true,persistSession:true,detectSessionInUrl:true}
+  auth:{autoRefreshToken:true,persistSession:true,detectSessionInUrl:false}
 });
 
 const SELS=[
@@ -474,62 +474,28 @@ let menuTarget=null, saveQueue=new Map(), saveTimer=null, lpTimer=null;
 let meusGrupos=[], grupoAtivo=null;
 
 /* ── INIT ── */
-let authHandled=false;
-
 async function init(){
-  // Timeout de segurança: se travar por mais de 6s, vai pro login
-  const timeout=setTimeout(()=>{
-    if(!authHandled){
-      authHandled=true;
-      document.getElementById('loading').style.display='none';
-      showScreen('login');
-    }
-  },6000);
-
   try{
-    const{data:{session},error}=await sb.auth.getSession();
-    clearTimeout(timeout);
-
-    if(error||!session){
-      // Sessão inválida ou expirada — limpa e manda pro login
-      await sb.auth.signOut().catch(()=>{});
-      if(!authHandled){
-        authHandled=true;
-        document.getElementById('loading').style.display='none';
-        showScreen('login');
-      }
-      return;
-    }
-
-    if(!authHandled){
-      authHandled=true;
+    const{data:{session}}=await sb.auth.getSession();
+    if(session&&session.user){
       user=session.user;
       await afterLogin();
-    }
-  }catch(e){
-    clearTimeout(timeout);
-    if(!authHandled){
-      authHandled=true;
+    } else {
       document.getElementById('loading').style.display='none';
       showScreen('login');
     }
+  }catch(e){
+    console.error('init error:',e);
+    document.getElementById('loading').style.display='none';
+    showScreen('login');
   }
 }
 
-/* Escuta mudanças de sessão */
-sb.auth.onAuthStateChange(async(event,session)=>{
-  if(event==='SIGNED_IN'&&session&&!authHandled){
-    authHandled=true;
-    user=session.user;
-    await afterLogin();
-  }
-  if(event==='TOKEN_REFRESHED'&&session){
-    user=session.user; // atualiza silenciosamente
-  }
-  if(event==='SIGNED_OUT'||(event==='TOKEN_REFRESH_FAILED')){
+/* Escuta só SIGNED_OUT para desconectar se o token expirar em background */
+sb.auth.onAuthStateChange((event,session)=>{
+  if(event==='SIGNED_OUT'||event==='TOKEN_REFRESH_FAILED'){
     user=null; perfil=null; state={};
     document.getElementById('app').style.display='none';
-    authHandled=false;
     showScreen('login');
   }
 });
