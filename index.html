@@ -451,22 +451,30 @@ const sb=supabase.createClient(SB_URL,SB_KEY,{
 });
 
 const SELS=[
-  {p:"Alemanha",f:"🇩🇪"},{p:"Algeria",f:"🇩🇿"},{p:"Arabia Saudita",f:"🇸🇦"},
-  {p:"Argentina",f:"🇦🇷"},{p:"Australia",f:"🇦🇺"},{p:"Belgica",f:"🇧🇪"},
-  {p:"Bolivia",f:"🇧🇴"},{p:"Brasil",f:"🇧🇷"},{p:"Camaroes",f:"🇨🇲"},
-  {p:"Canada",f:"🇨🇦"},{p:"Chile",f:"🇨🇱"},{p:"Colombia",f:"🇨🇴"},
-  {p:"Coreia do Sul",f:"🇰🇷"},{p:"Costa Rica",f:"🇨🇷"},{p:"Croatia",f:"🇭🇷"},
-  {p:"Dinamarca",f:"🇩🇰"},{p:"Egito",f:"🇪🇬"},{p:"Equador",f:"🇪🇨"},
-  {p:"Escocia",f:"🏴󠁧󠁢󠁳󠁣󠁴󠁿"},{p:"Espanha",f:"🇪🇸"},{p:"EUA",f:"🇺🇸"},
-  {p:"Franca",f:"🇫🇷"},{p:"Ghana",f:"🇬🇭"},{p:"Holanda",f:"🇳🇱"},
-  {p:"Honduras",f:"🇭🇳"},{p:"Indonesia",f:"🇮🇩"},{p:"Ira",f:"🇮🇷"},
-  {p:"Jamaica",f:"🇯🇲"},{p:"Japao",f:"🇯🇵"},{p:"Marrocos",f:"🇲🇦"},
-  {p:"Mexico",f:"🇲🇽"},{p:"Nigeria",f:"🇳🇬"},{p:"Nova Zelandia",f:"🇳🇿"},
-  {p:"Panama",f:"🇵🇦"},{p:"Paraguai",f:"🇵🇾"},{p:"Peru",f:"🇵🇪"},
-  {p:"Polonia",f:"🇵🇱"},{p:"Portugal",f:"🇵🇹"},{p:"Qatar",f:"🇶🇦"},
-  {p:"Quirguistao",f:"🇰🇬"},{p:"Rep. Dominicana",f:"🇩🇴"},{p:"Rep. Tcheca",f:"🇨🇿"},
-  {p:"Senegal",f:"🇸🇳"},{p:"Serbia",f:"🇷🇸"},{p:"Suica",f:"🇨🇭"},
-  {p:"Turquia",f:"🇹🇷"},{p:"Uruguai",f:"🇺🇾"},{p:"Venezuela",f:"🇻🇪"}
+  // Grupo A
+  {p:"Mexico",f:"🇲🇽"},{p:"Africa do Sul",f:"🇿🇦"},{p:"Coreia do Sul",f:"🇰🇷"},{p:"Tchecia",f:"🇨🇿"},
+  // Grupo B
+  {p:"Canada",f:"🇨🇦"},{p:"Bosnia-Herzegovina",f:"🇧🇦"},{p:"Qatar",f:"🇶🇦"},{p:"Suica",f:"🇨🇭"},
+  // Grupo C
+  {p:"Brasil",f:"🇧🇷"},{p:"Marrocos",f:"🇲🇦"},{p:"Haiti",f:"🇭🇹"},{p:"Escocia",f:"🏴󠁧󠁢󠁳󠁣󠁴󠁿"},
+  // Grupo D
+  {p:"EUA",f:"🇺🇸"},{p:"Paraguai",f:"🇵🇾"},{p:"Australia",f:"🇦🇺"},{p:"Turquia",f:"🇹🇷"},
+  // Grupo E
+  {p:"Alemanha",f:"🇩🇪"},{p:"Curacao",f:"🇨🇼"},{p:"Costa do Marfim",f:"🇨🇮"},{p:"Equador",f:"🇪🇨"},
+  // Grupo F
+  {p:"Holanda",f:"🇳🇱"},{p:"Japao",f:"🇯🇵"},{p:"Suecia",f:"🇸🇪"},{p:"Tunisia",f:"🇹🇳"},
+  // Grupo G
+  {p:"Belgica",f:"🇧🇪"},{p:"Egito",f:"🇪🇬"},{p:"Ira",f:"🇮🇷"},{p:"Nova Zelandia",f:"🇳🇿"},
+  // Grupo H
+  {p:"Espanha",f:"🇪🇸"},{p:"Cabo Verde",f:"🇨🇻"},{p:"Arabia Saudita",f:"🇸🇦"},{p:"Uruguai",f:"🇺🇾"},
+  // Grupo I
+  {p:"Franca",f:"🇫🇷"},{p:"Senegal",f:"🇸🇳"},{p:"Iraque",f:"🇮🇶"},{p:"Noruega",f:"🇳🇴"},
+  // Grupo J
+  {p:"Argentina",f:"🇦🇷"},{p:"Algeria",f:"🇩🇿"},{p:"Austria",f:"🇦🇹"},{p:"Jordania",f:"🇯🇴"},
+  // Grupo K
+  {p:"Portugal",f:"🇵🇹"},{p:"Congo DR",f:"🇨🇩"},{p:"Uzbequistao",f:"🇺🇿"},{p:"Colombia",f:"🇨🇴"},
+  // Grupo L
+  {p:"Inglaterra",f:"🏴󠁧󠁢󠁥󠁮󠁧󠁿"},{p:"Croatia",f:"🇭🇷"},{p:"Ghana",f:"🇬🇭"},{p:"Panama",f:"🇵🇦"}
 ];
 const QTD=20, TOTAL=SELS.length*QTD;
 let user=null, perfil=null, state={}, filter='all', openGrps=new Set(), openAmigos=new Set();
