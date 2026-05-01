@@ -770,32 +770,64 @@ function renderGroups(){
 
 /* ── STICKER EVENTS ── */
 function attachStickerEvents(container){
-  let lpStart=null, lpGi, lpI, lpMoved=false;
+  let lpStart=null, lpMoved=false, didLongPress=false;
+
   container.addEventListener('touchstart',e=>{
     const btn=e.target.closest('[data-delta]'); if(btn) return;
     const stk=e.target.closest('.stk[data-gi]'); if(!stk) return;
-    lpGi=parseInt(stk.dataset.gi); lpI=parseInt(stk.dataset.i);
-    lpMoved=false; lpStart=Date.now();
+    const gi=parseInt(stk.dataset.gi), i=parseInt(stk.dataset.i);
+    lpMoved=false; didLongPress=false; lpStart=Date.now();
     lpTimer=setTimeout(()=>{
-      if(!lpMoved){if(navigator.vibrate)navigator.vibrate(30);openMenu(e,lpGi,lpI);lpStart=null;}
+      if(!lpMoved){
+        didLongPress=true;
+        if(navigator.vibrate) navigator.vibrate(40);
+        openMenu(e,gi,i);
+        lpStart=null;
+      }
     },500);
   },{passive:true});
-  container.addEventListener('touchmove',e=>{lpMoved=true;clearTimeout(lpTimer);},{passive:true});
+
+  container.addEventListener('touchmove',e=>{
+    // cancela long press se mover mais de 8px
+    const t=e.touches[0];
+    lpMoved=true;
+    clearTimeout(lpTimer);
+  },{passive:true});
+
   container.addEventListener('touchend',e=>{
+    // botões +/-
     const btn=e.target.closest('[data-delta]');
-    if(btn){e.preventDefault();changeQty(parseInt(btn.dataset.gi),parseInt(btn.dataset.i),parseInt(btn.dataset.delta));return;}
+    if(btn){
+      e.preventDefault();
+      clearTimeout(lpTimer);
+      changeQty(parseInt(btn.dataset.gi),parseInt(btn.dataset.i),parseInt(btn.dataset.delta));
+      return;
+    }
+
     clearTimeout(lpTimer);
     const stk=e.target.closest('.stk[data-gi]'); if(!stk) return;
-    if(!lpMoved&&lpStart&&(Date.now()-lpStart)<500){e.preventDefault();quickToggle(parseInt(stk.dataset.gi),parseInt(stk.dataset.i));}
+
+    // se foi long press, não faz nada no touchend
+    if(didLongPress){ didLongPress=false; lpStart=null; return; }
+
+    // toque rápido = toggle
+    if(!lpMoved && lpStart && (Date.now()-lpStart)<500){
+      e.preventDefault(); // impede o click fantasma do iOS
+      quickToggle(parseInt(stk.dataset.gi),parseInt(stk.dataset.i));
+    }
     lpStart=null;
   },{passive:false});
+
+  // Desktop: click normal (sem touch)
   container.addEventListener('click',e=>{
+    if('ontouchstart' in window) return; // ignora em touch
     const btn=e.target.closest('[data-delta]');
-    if(btn){changeQty(parseInt(btn.dataset.gi),parseInt(btn.dataset.i),parseInt(btn.dataset.delta));return;}
-    if('ontouchstart' in window) return;
+    if(btn){ changeQty(parseInt(btn.dataset.gi),parseInt(btn.dataset.i),parseInt(btn.dataset.delta)); return; }
     const stk=e.target.closest('.stk[data-gi]');
     if(stk) quickToggle(parseInt(stk.dataset.gi),parseInt(stk.dataset.i));
   });
+
+  // Desktop: botão direito abre menu
   container.addEventListener('contextmenu',e=>{
     const stk=e.target.closest('.stk[data-gi]'); if(!stk) return;
     e.preventDefault();
