@@ -193,9 +193,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
 .mc{background:rgba(0,196,106,.1);border:1px solid rgba(0,196,106,.3);border-radius:8px;padding:4px 10px;font-size:12px;color:var(--g)}
 .mc.gold{background:rgba(255,210,63,.1);border-color:rgba(255,210,63,.3);color:var(--gold)}
 .nmt{font-size:13px;color:var(--mt)}
-.repg{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;margin-bottom:8px}
-.repgh{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px;font-weight:500}
-.repcs{display:flex;flex-wrap:wrap;gap:6px}
+.repg{background:var(--sf);border:1px solid var(--bd);border-radius:12px;margin-bottom:8px;overflow:hidden}
+.repgh{display:flex;align-items:center;gap:8px;padding:12px 14px;font-size:13px;font-weight:500;cursor:pointer;-webkit-tap-highlight-color:transparent;min-height:var(--tap)}
+.repgh:active{background:var(--sf2)}
+.repgh-left{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.repgh-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.repgh-count{font-size:11px;color:var(--mt);font-weight:400}
+.repgh-chv{font-size:10px;color:var(--mt);transition:transform .25s}
+.repg.open .repgh-chv{transform:rotate(180deg)}
+.repcs{display:flex;flex-wrap:wrap;gap:6px;padding:0 14px 12px;display:none}
+.repg.open .repcs{display:flex}
 .repc{background:rgba(255,210,63,.1);border:1px solid rgba(255,210,63,.3);border-radius:8px;padding:4px 10px;font-size:12px;color:var(--gold);font-weight:500}
 .empty{text-align:center;padding:3rem 1rem;color:var(--mt)}
 .empty .ico{font-size:2.5rem;margin-bottom:.75rem}
@@ -212,6 +219,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
 .toast.show{transform:translateX(-50%) translateY(0)}
 
 .footer{padding:1.5rem;text-align:center;font-size:11px;color:var(--mt);border-top:1px solid var(--bd)}
+
+/* ── GROUP FILTER BAR ── */
+.grp-filter-bar{display:flex;gap:6px;padding:.5rem 1.25rem .75rem;overflow-x:auto;scrollbar-width:none}
+.grp-filter-bar::-webkit-scrollbar{display:none}
+.gfchip{flex-shrink:0;padding:6px 13px;border-radius:99px;border:1px solid var(--bd);background:var(--sf);font-size:12px;font-weight:500;color:var(--mt);cursor:pointer;font-family:'DM Sans',sans-serif;-webkit-tap-highlight-color:transparent;transition:all .15s;min-height:34px;display:flex;align-items:center;gap:5px}
+.gfchip.on{background:rgba(0,196,106,.15);border-color:var(--g);color:var(--g)}
+.gfchip:active{opacity:.7}
+.gfchip .gfdot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
+
+/* ── GROUP SECTION HEADER ── */
+.grp-section-header{display:flex;align-items:center;gap:10px;padding:4px 2px;margin-bottom:4px;margin-top:4px}
+.grp-section-label{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--g);letter-spacing:.05em;flex-shrink:0}
+.grp-section-line{flex:1;height:1px;background:var(--bd2)}
+.grp-section-count{font-size:11px;color:var(--mt);flex-shrink:0}
 
 /* ── GRUPOS BAR ── */
 .grupos-bar{display:flex;align-items:center;gap:8px;padding:.75rem 1.25rem;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--bd)}
@@ -250,6 +271,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
 .mgrp-nome{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mgrp-cod{font-size:11px;color:var(--mt);letter-spacing:.08em}
 .mgrp-sair{padding:6px 12px;border-radius:8px;border:1px solid rgba(255,77,77,.3);background:transparent;color:var(--red);font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap}
+
+/* ── INVITE BANNER ── */
+.invite-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 1.25rem;background:rgba(0,196,106,.07);border-bottom:1px solid rgba(0,196,106,.15)}
+.invite-info{display:flex;align-items:center;gap:10px}
+.invite-label{font-size:11px;color:var(--mt);letter-spacing:.05em;text-transform:uppercase}
+.invite-code{font-family:monospace;font-size:16px;font-weight:700;color:var(--g);letter-spacing:.2em}
+.invite-copy{flex-shrink:0;padding:7px 16px;border-radius:8px;border:1px solid rgba(0,196,106,.4);background:transparent;color:var(--g);font-size:13px;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.invite-copy:active{background:rgba(0,196,106,.15)}
 
 /* ── OVERLAY ── */
 #overlay{position:fixed;inset:0;z-index:1999;display:none}
@@ -362,6 +391,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
         <button class="chip" id="f-tenho" onclick="setFilter('tenho')">Tenho</button>
       </div>
     </div>
+    <div class="grp-filter-bar" id="grp-filter-bar">
+      <button class="gfchip on" onclick="setGrupoFilter(null)" id="gff-all"><span class="gfdot"></span>Todos</button>
+      <button class="gfchip" onclick="setGrupoFilter('esp')" id="gff-esp">⭐ Esp</button>
+      <button class="gfchip" onclick="setGrupoFilter('A')" id="gff-A">Grupo A</button>
+      <button class="gfchip" onclick="setGrupoFilter('B')" id="gff-B">Grupo B</button>
+      <button class="gfchip" onclick="setGrupoFilter('C')" id="gff-C">Grupo C</button>
+      <button class="gfchip" onclick="setGrupoFilter('D')" id="gff-D">Grupo D</button>
+      <button class="gfchip" onclick="setGrupoFilter('E')" id="gff-E">Grupo E</button>
+      <button class="gfchip" onclick="setGrupoFilter('F')" id="gff-F">Grupo F</button>
+      <button class="gfchip" onclick="setGrupoFilter('G')" id="gff-G">Grupo G</button>
+      <button class="gfchip" onclick="setGrupoFilter('H')" id="gff-H">Grupo H</button>
+      <button class="gfchip" onclick="setGrupoFilter('I')" id="gff-I">Grupo I</button>
+      <button class="gfchip" onclick="setGrupoFilter('J')" id="gff-J">Grupo J</button>
+      <button class="gfchip" onclick="setGrupoFilter('K')" id="gff-K">Grupo K</button>
+      <button class="gfchip" onclick="setGrupoFilter('L')" id="gff-L">Grupo L</button>
+    </div>
     <div class="groups" id="gc"></div>
   </div>
 
@@ -372,6 +417,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
         <span class="gdot"></span>Todos
       </button>
       <button class="gbtn" onclick="abrirModalGrupos()">＋ Grupo</button>
+    </div>
+    <div id="grupo-invite-banner" style="display:none">
+      <div class="invite-banner">
+        <div class="invite-info">
+          <span class="invite-label">Codigo de convite</span>
+          <span class="invite-code" id="invite-code-txt">——</span>
+        </div>
+        <button class="invite-copy" onclick="copiarCodigoGrupo()">Copiar</button>
+      </div>
     </div>
     <div class="tp">
       <div class="sec">
@@ -455,34 +509,34 @@ const ESPECIAIS={p:"Especiais",f:"⭐",nums:['00','FWC1','FWC2','FWC3','FWC4','F
 
 const SELS=[
   // Grupo A
-  {p:"Mexico",f:"🇲🇽"},{p:"Africa do Sul",f:"🇿🇦"},{p:"Coreia do Sul",f:"🇰🇷"},{p:"Tchecia",f:"🇨🇿"},
+  {p:"Mexico",f:"🇲🇽",g:"A"},{p:"Africa do Sul",f:"🇿🇦",g:"A"},{p:"Coreia do Sul",f:"🇰🇷",g:"A"},{p:"Tchecia",f:"🇨🇿",g:"A"},
   // Grupo B
-  {p:"Canada",f:"🇨🇦"},{p:"Bosnia-Herzegovina",f:"🇧🇦"},{p:"Qatar",f:"🇶🇦"},{p:"Suica",f:"🇨🇭"},
+  {p:"Canada",f:"🇨🇦",g:"B"},{p:"Bosnia-Herzegovina",f:"🇧🇦",g:"B"},{p:"Qatar",f:"🇶🇦",g:"B"},{p:"Suica",f:"🇨🇭",g:"B"},
   // Grupo C
-  {p:"Brasil",f:"🇧🇷"},{p:"Marrocos",f:"🇲🇦"},{p:"Haiti",f:"🇭🇹"},{p:"Escocia",f:"🏴󠁧󠁢󠁳󠁣󠁴󠁿"},
+  {p:"Brasil",f:"🇧🇷",g:"C"},{p:"Marrocos",f:"🇲🇦",g:"C"},{p:"Haiti",f:"🇭🇹",g:"C"},{p:"Escocia",f:"🏴󠁧󠁢󠁳󠁣󠁴󠁿",g:"C"},
   // Grupo D
-  {p:"EUA",f:"🇺🇸"},{p:"Paraguai",f:"🇵🇾"},{p:"Australia",f:"🇦🇺"},{p:"Turquia",f:"🇹🇷"},
+  {p:"EUA",f:"🇺🇸",g:"D"},{p:"Paraguai",f:"🇵🇾",g:"D"},{p:"Australia",f:"🇦🇺",g:"D"},{p:"Turquia",f:"🇹🇷",g:"D"},
   // Grupo E
-  {p:"Alemanha",f:"🇩🇪"},{p:"Curacao",f:"🇨🇼"},{p:"Costa do Marfim",f:"🇨🇮"},{p:"Equador",f:"🇪🇨"},
+  {p:"Alemanha",f:"🇩🇪",g:"E"},{p:"Curacao",f:"🇨🇼",g:"E"},{p:"Costa do Marfim",f:"🇨🇮",g:"E"},{p:"Equador",f:"🇪🇨",g:"E"},
   // Grupo F
-  {p:"Holanda",f:"🇳🇱"},{p:"Japao",f:"🇯🇵"},{p:"Suecia",f:"🇸🇪"},{p:"Tunisia",f:"🇹🇳"},
+  {p:"Holanda",f:"🇳🇱",g:"F"},{p:"Japao",f:"🇯🇵",g:"F"},{p:"Suecia",f:"🇸🇪",g:"F"},{p:"Tunisia",f:"🇹🇳",g:"F"},
   // Grupo G
-  {p:"Belgica",f:"🇧🇪"},{p:"Egito",f:"🇪🇬"},{p:"Ira",f:"🇮🇷"},{p:"Nova Zelandia",f:"🇳🇿"},
+  {p:"Belgica",f:"🇧🇪",g:"G"},{p:"Egito",f:"🇪🇬",g:"G"},{p:"Ira",f:"🇮🇷",g:"G"},{p:"Nova Zelandia",f:"🇳🇿",g:"G"},
   // Grupo H
-  {p:"Espanha",f:"🇪🇸"},{p:"Cabo Verde",f:"🇨🇻"},{p:"Arabia Saudita",f:"🇸🇦"},{p:"Uruguai",f:"🇺🇾"},
+  {p:"Espanha",f:"🇪🇸",g:"H"},{p:"Cabo Verde",f:"🇨🇻",g:"H"},{p:"Arabia Saudita",f:"🇸🇦",g:"H"},{p:"Uruguai",f:"🇺🇾",g:"H"},
   // Grupo I
-  {p:"Franca",f:"🇫🇷"},{p:"Senegal",f:"🇸🇳"},{p:"Iraque",f:"🇮🇶"},{p:"Noruega",f:"🇳🇴"},
+  {p:"Franca",f:"🇫🇷",g:"I"},{p:"Senegal",f:"🇸🇳",g:"I"},{p:"Iraque",f:"🇮🇶",g:"I"},{p:"Noruega",f:"🇳🇴",g:"I"},
   // Grupo J
-  {p:"Argentina",f:"🇦🇷"},{p:"Algeria",f:"🇩🇿"},{p:"Austria",f:"🇦🇹"},{p:"Jordania",f:"🇯🇴"},
+  {p:"Argentina",f:"🇦🇷",g:"J"},{p:"Algeria",f:"🇩🇿",g:"J"},{p:"Austria",f:"🇦🇹",g:"J"},{p:"Jordania",f:"🇯🇴",g:"J"},
   // Grupo K
-  {p:"Portugal",f:"🇵🇹"},{p:"Congo DR",f:"🇨🇩"},{p:"Uzbequistao",f:"🇺🇿"},{p:"Colombia",f:"🇨🇴"},
+  {p:"Portugal",f:"🇵🇹",g:"K"},{p:"Congo DR",f:"🇨🇩",g:"K"},{p:"Uzbequistao",f:"🇺🇿",g:"K"},{p:"Colombia",f:"🇨🇴",g:"K"},
   // Grupo L
-  {p:"Inglaterra",f:"🏴󠁧󠁢󠁥󠁮󠁧󠁿"},{p:"Croatia",f:"🇭🇷"},{p:"Ghana",f:"🇬🇭"},{p:"Panama",f:"🇵🇦"}
+  {p:"Inglaterra",f:"🏴󠁧󠁢󠁥󠁮󠁧󠁿",g:"L"},{p:"Croatia",f:"🇭🇷",g:"L"},{p:"Ghana",f:"🇬🇭",g:"L"},{p:"Panama",f:"🇵🇦",g:"L"}
 ];
 const QTD=20, TOTAL=SELS.length*QTD+ESPECIAIS.nums.length;
-let user=null, perfil=null, state={}, filter='all', openGrps=new Set(), openAmigos=new Set();
+let user=null, perfil=null, state={}, filter='all', grupoFilter=null, openGrps=new Set(), openAmigos=new Set();
 let menuTarget=null, saveQueue=new Map(), saveTimer=null, lpTimer=null;
-let meusGrupos=[], grupoAtivo=null;
+let meusGrupos=[], grupoAtivo=null, openReps=new Set();
 
 /* ── INIT ── */
 async function init(){
@@ -749,6 +803,15 @@ function setFilter(f){
     document.getElementById('f-'+id).classList.toggle('on',id===f));
   renderGroups();
 }
+function setGrupoFilter(g){
+  grupoFilter=g;
+  // clear search when filtering by group
+  document.querySelectorAll('#grp-filter-bar .gfchip').forEach(el=>el.classList.remove('on'));
+  const activeId=g===null?'gff-all':g==='esp'?'gff-esp':'gff-'+g;
+  const activeEl=document.getElementById(activeId);
+  if(activeEl) activeEl.classList.add('on');
+  renderGroups();
+}
 
 /* ── GROUPS ── */
 function renderGroups(){
@@ -756,66 +819,89 @@ function renderGroups(){
   let html='', any=false;
 
   // Grupo especial
-  const espNome=ESPECIAIS.p.toLowerCase();
-  if(!q||espNome.includes(q)){
-    let ct=0;
-    ESPECIAIS.nums.forEach(n=>{ if(state['esp'][n].status!=='vazia') ct++; });
-    const total=ESPECIAIS.nums.length;
-    if(!(filter==='tenho'&&ct===0)&&!(filter==='falta'&&ct===total)){
-      any=true;
-      const open=openGrps.has('esp'), pct=Math.round(ct/total*100);
-      html+=`<div class="grp${open?' open':''}" id="grp_esp">`;
-      html+=`<div class="gh" onclick="toggleGrp('esp')">`;
-      html+=`<span class="fl">${ESPECIAIS.f}</span><span class="gn">${ESPECIAIS.p}</span>`;
-      html+=`<div class="gmb"><div class="gmf" style="width:${pct}%"></div></div>`;
-      html+=`<span class="gc">${ct}/${total}</span><span class="chv">▼</span></div>`;
-      html+=`<div class="sw"><div class="sg">`;
-      ESPECIAIS.nums.forEach(n=>{
-        const{status:st,qty}=state['esp'][n];
-        if(filter==='tenho'&&st==='vazia') return;
-        if(filter==='falta'&&st!=='vazia') return;
-        html+=`<div class="stk${st!=='vazia'?' '+st:''}" id="stk_esp_${n}" data-gi="esp" data-i="${n}">`;
-        html+=`<span class="si">${ESPECIAIS.f}</span><span class="sn">${n}</span>`;
-        if(st==='repetida'){
-          html+=`<div class="qty-ctrl"><button class="qty-btn" data-delta="-1" data-gi="esp" data-i="${n}">-</button><span class="qty-num" id="qty_esp_${n}">${qty}</span><button class="qty-btn" data-delta="1" data-gi="esp" data-i="${n}">+</button></div>`;
+  const showEsp=!grupoFilter||grupoFilter==='esp';
+  if(showEsp){
+    const espNome=ESPECIAIS.p.toLowerCase();
+    if(!q||espNome.includes(q)){
+      let ct=0;
+      ESPECIAIS.nums.forEach(n=>{ if(state['esp'][n].status!=='vazia') ct++; });
+      const total=ESPECIAIS.nums.length;
+      if(!(filter==='tenho'&&ct===0)&&!(filter==='falta'&&ct===total)){
+        any=true;
+        if(!grupoFilter){
+          html+=`<div class="grp-section-header"><span class="grp-section-label">Especiais</span><div class="grp-section-line"></div><span class="grp-section-count">${ct}/${total}</span></div>`;
         }
-        html+=`</div>`;
-      });
-      html+=`</div></div></div>`;
+        const open=openGrps.has('esp'), pct=Math.round(ct/total*100);
+        html+=`<div class="grp${open?' open':''}" id="grp_esp">`;
+        html+=`<div class="gh" onclick="toggleGrp('esp')">`;
+        html+=`<span class="fl">${ESPECIAIS.f}</span><span class="gn">${ESPECIAIS.p}</span>`;
+        html+=`<div class="gmb"><div class="gmf" style="width:${pct}%"></div></div>`;
+        html+=`<span class="gc">${ct}/${total}</span><span class="chv">▼</span></div>`;
+        html+=`<div class="sw"><div class="sg">`;
+        ESPECIAIS.nums.forEach(n=>{
+          const{status:st,qty}=state['esp'][n];
+          if(filter==='tenho'&&st==='vazia') return;
+          if(filter==='falta'&&st!=='vazia') return;
+          html+=`<div class="stk${st!=='vazia'?' '+st:''}" id="stk_esp_${n}" data-gi="esp" data-i="${n}">`;
+          html+=`<span class="si">${ESPECIAIS.f}</span><span class="sn">${n}</span>`;
+          if(st==='repetida'){
+            html+=`<div class="qty-ctrl"><button class="qty-btn" data-delta="-1" data-gi="esp" data-i="${n}">-</button><span class="qty-num" id="qty_esp_${n}">${qty}</span><button class="qty-btn" data-delta="1" data-gi="esp" data-i="${n}">+</button></div>`;
+          }
+          html+=`</div>`;
+        });
+        html+=`</div></div></div>`;
+      }
     }
   }
 
-  SELS.forEach((s,gi)=>{
-    if(q&&!s.p.toLowerCase().includes(q)) return;
-    let ct=0;
-    for(let i=1;i<=QTD;i++) if(state[gi][i].status!=='vazia') ct++;
-    if(filter==='tenho'&&ct===0) return;
-    if(filter==='falta'&&ct===QTD) return;
-    any=true;
-    const open=openGrps.has(gi), pct=Math.round(ct/QTD*100);
-    html+=`<div class="grp${open?' open':''}" id="grp_${gi}">`;
-    html+=`<div class="gh" onclick="toggleGrp(${gi})">`;
-    html+=`<span class="fl">${s.f}</span><span class="gn">${s.p}</span>`;
-    html+=`<div class="gmb"><div class="gmf" style="width:${pct}%"></div></div>`;
-    html+=`<span class="gc">${ct}/${QTD}</span><span class="chv">▼</span></div>`;
-    html+=`<div class="sw"><div class="sg">`;
-    for(let i=1;i<=QTD;i++){
-      const{status:st,qty}=state[gi][i];
-      if(filter==='tenho'&&st==='vazia') continue;
-      if(filter==='falta'&&st!=='vazia') continue;
-      html+=`<div class="stk${st!=='vazia'?' '+st:''}" id="stk_${gi}_${i}" data-gi="${gi}" data-i="${i}">`;
-      html+=`<span class="si">${s.f}</span><span class="sn">${i}</span>`;
-      if(st==='repetida'){
-        html+=`<div class="qty-ctrl" data-ctrl="1">
-          <button class="qty-btn" data-delta="-1" data-gi="${gi}" data-i="${i}">-</button>
-          <span class="qty-num" id="qty_${gi}_${i}">${qty}</span>
-          <button class="qty-btn" data-delta="1" data-gi="${gi}" data-i="${i}">+</button>
-        </div>`;
+  // Agrupa seleções por grupo (A-L)
+  const GRUPOS=['A','B','C','D','E','F','G','H','I','J','K','L'];
+  const gruposParaMostrar=grupoFilter&&grupoFilter!=='esp'?[grupoFilter]:GRUPOS;
+
+  gruposParaMostrar.forEach(letra=>{
+    const selsDoGrupo=SELS.map((s,gi)=>({s,gi})).filter(({s})=>s.g===letra);
+    let grpHtml='', grpCt=0, grpTotal=0, grpAny=false;
+
+    selsDoGrupo.forEach(({s,gi})=>{
+      if(q&&!s.p.toLowerCase().includes(q)) return;
+      let ct=0;
+      for(let i=1;i<=QTD;i++) if(state[gi][i].status!=='vazia') ct++;
+      grpCt+=ct; grpTotal+=QTD;
+      if(filter==='tenho'&&ct===0) return;
+      if(filter==='falta'&&ct===QTD) return;
+      grpAny=true; any=true;
+      const open=openGrps.has(gi), pct=Math.round(ct/QTD*100);
+      grpHtml+=`<div class="grp${open?' open':''}" id="grp_${gi}">`;
+      grpHtml+=`<div class="gh" onclick="toggleGrp(${gi})">`;
+      grpHtml+=`<span class="fl">${s.f}</span><span class="gn">${s.p}</span>`;
+      grpHtml+=`<div class="gmb"><div class="gmf" style="width:${pct}%"></div></div>`;
+      grpHtml+=`<span class="gc">${ct}/${QTD}</span><span class="chv">▼</span></div>`;
+      grpHtml+=`<div class="sw"><div class="sg">`;
+      for(let i=1;i<=QTD;i++){
+        const{status:st,qty}=state[gi][i];
+        if(filter==='tenho'&&st==='vazia') continue;
+        if(filter==='falta'&&st!=='vazia') continue;
+        grpHtml+=`<div class="stk${st!=='vazia'?' '+st:''}" id="stk_${gi}_${i}" data-gi="${gi}" data-i="${i}">`;
+        grpHtml+=`<span class="si">${s.f}</span><span class="sn">${i}</span>`;
+        if(st==='repetida'){
+          grpHtml+=`<div class="qty-ctrl" data-ctrl="1">
+            <button class="qty-btn" data-delta="-1" data-gi="${gi}" data-i="${i}">-</button>
+            <span class="qty-num" id="qty_${gi}_${i}">${qty}</span>
+            <button class="qty-btn" data-delta="1" data-gi="${gi}" data-i="${i}">+</button>
+          </div>`;
+        }
+        grpHtml+=`</div>`;
       }
-      html+=`</div>`;
+      grpHtml+=`</div></div></div>`;
+    });
+
+    if(grpAny){
+      // Header do grupo
+      html+=`<div class="grp-section-header"><span class="grp-section-label">Grupo ${letra}</span><div class="grp-section-line"></div><span class="grp-section-count">${grpCt}/${grpTotal}</span></div>`;
+      html+=grpHtml;
     }
-    html+=`</div></div></div>`;
   });
+
   if(!any) html='<div class="empty"><div class="ico">🔍</div><p>Nenhuma selecao encontrada.</p></div>';
   const gc=document.getElementById('gc');
   gc.innerHTML=html;
@@ -962,6 +1048,10 @@ function closeMenu(){
 }
 
 /* ── TROCAS ── */
+function toggleRep(key){
+  if(openReps.has(key)) openReps.delete(key); else openReps.add(key);
+  document.getElementById('repg_'+key)?.classList.toggle('open', openReps.has(key));
+}
 async function renderTrocas(){
   let repHTML='',shareLines=[],hasRep=false;
 
@@ -969,11 +1059,17 @@ async function renderTrocas(){
   const espReps=ESPECIAIS.nums.filter(n=>state['esp'][n].status==='repetida');
   if(espReps.length){
     hasRep=true;
+    const key='esp';
     const labels=espReps.map(n=>{const qty=state['esp'][n].qty;return n+(qty>1?' x'+qty:'');});
     shareLines.push(ESPECIAIS.f+' '+ESPECIAIS.p+': '+labels.join(', '));
-    repHTML+=`<div class="repg"><div class="repgh"><span>${ESPECIAIS.f}</span>${ESPECIAIS.p}</div><div class="repcs">
-      ${espReps.map(n=>{const qty=state['esp'][n].qty;return `<span class="repc">${n}${qty>1?' x'+qty:''}</span>`;}).join('')}
-    </div></div>`;
+    const isOpen=openReps.has(key);
+    repHTML+=`<div class="repg${isOpen?' open':''}" id="repg_${key}">
+      <div class="repgh" onclick="toggleRep('${key}')">
+        <div class="repgh-left"><span>${ESPECIAIS.f}</span>${ESPECIAIS.p}</div>
+        <div class="repgh-right"><span class="repgh-count">${espReps.length} rep.</span><span class="repgh-chv">▼</span></div>
+      </div>
+      <div class="repcs">${espReps.map(n=>{const qty=state['esp'][n].qty;return `<span class="repc">${n}${qty>1?' x'+qty:''}</span>`;}).join('')}</div>
+    </div>`;
   }
 
   SELS.forEach((s,gi)=>{
@@ -981,11 +1077,17 @@ async function renderTrocas(){
     for(let i=1;i<=QTD;i++) if(state[gi][i].status==='repetida') reps.push(i);
     if(!reps.length) return;
     hasRep=true;
+    const key=String(gi);
     const repLabels=reps.map(i=>{const qty=state[gi][i].qty;return '#'+i+(qty>1?' x'+qty:'');});
     shareLines.push(s.f+' '+s.p+': '+repLabels.join(', '));
-    repHTML+=`<div class="repg"><div class="repgh"><span>${s.f}</span>${s.p}</div><div class="repcs">
-      ${reps.map(i=>{const qty=state[gi][i].qty;return `<span class="repc">#${i}${qty>1?' x'+qty:''}</span>`;}).join('')}
-    </div></div>`;
+    const isOpen=openReps.has(key);
+    repHTML+=`<div class="repg${isOpen?' open':''}" id="repg_${key}">
+      <div class="repgh" onclick="toggleRep('${key}')">
+        <div class="repgh-left"><span>${s.f}</span>${s.p}</div>
+        <div class="repgh-right"><span class="repgh-count">${reps.length} rep.</span><span class="repgh-chv">▼</span></div>
+      </div>
+      <div class="repcs">${reps.map(i=>{const qty=state[gi][i].qty;return `<span class="repc">#${i}${qty>1?' x'+qty:''}</span>`;}).join('')}</div>
+    </div>`;
   });
   document.getElementById('minhas-reps').innerHTML=hasRep?repHTML:
     '<div class="empty"><div class="ico">⭐</div><p>Nenhuma repetida ainda.<br>Segure uma figurinha por 1s para marcar.</p></div>';
@@ -1105,6 +1207,15 @@ function renderGruposBar(){
       <span class="gdot"></span>Todos</button>
     ${chips}
     <button class="gbtn" onclick="abrirModalGrupos()">＋ Grupo</button>`;
+
+  // Banner de convite
+  const banner=document.getElementById('grupo-invite-banner');
+  if(grupoAtivo){
+    document.getElementById('invite-code-txt').textContent=grupoAtivo.codigo;
+    banner.style.display='block';
+  } else {
+    banner.style.display='none';
+  }
 }
 function selecionarGrupo(id){
   grupoAtivo=id?meusGrupos.find(g=>g.id===id)||null:null;
@@ -1112,6 +1223,18 @@ function selecionarGrupo(id){
   const ssub=document.getElementById('trocas-ssub');
   ssub.textContent=grupoAtivo?`Trocas dentro do grupo "${grupoAtivo.nome}"`:'Veja o que seus amigos tem repetido que voce precisa';
   renderTrocas();
+}
+function copiarCodigoGrupo(){
+  if(!grupoAtivo) return;
+  navigator.clipboard.writeText(grupoAtivo.codigo)
+    .then(()=>showToast('✅ Codigo copiado!'))
+    .catch(()=>{
+      const ta=document.createElement('textarea');
+      ta.value=grupoAtivo.codigo; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+      showToast('✅ Codigo copiado!');
+    });
 }
 function abrirModalGrupos(){
   document.getElementById('modal-grupos').classList.add('show');
