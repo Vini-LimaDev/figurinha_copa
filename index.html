@@ -309,12 +309,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--dk);color:var(--tx);min-h
         <button class="chip on" id="f-all" onclick="setFilter('all')">Todas</button>
         <button class="chip" id="f-falta" onclick="setFilter('falta')">Faltam</button>
         <button class="chip" id="f-tenho" onclick="setFilter('tenho')">Tenho</button>
+        <button class="chip" id="f-rep" onclick="setFilter('rep')">Repetidas</button>
       </div>
     </div>
     <div class="grp-filter-bar" id="grp-filter-bar">
       <button class="gfchip on" onclick="setGrupoFilter(null)" id="gff-all"><span class="gfdot"></span>Todos</button>
       <button class="gfchip" onclick="setGrupoFilter('esp')" id="gff-esp">&#11088; Esp</button>
-      <button class="gfchip" onclick="setGrupoFilter('cc')" id="gff-cc">&#127870; CC</button>
+      <button class="gfchip" onclick="setGrupoFilter('cc')" id="gff-cc">🥤 CC</button>
       <button class="gfchip" onclick="setGrupoFilter('A')" id="gff-A">Grupo A</button>
       <button class="gfchip" onclick="setGrupoFilter('B')" id="gff-B">Grupo B</button>
       <button class="gfchip" onclick="setGrupoFilter('C')" id="gff-C">Grupo C</button>
@@ -572,7 +573,16 @@ function updateGrpHeader(gi){
   const gmfEl=grp.querySelector('.gmf');if(gmfEl)gmfEl.style.width=pct+'%';
 }
 
-function setFilter(f){filter=f;['all','falta','tenho'].forEach(id=>document.getElementById('f-'+id).classList.toggle('on',id===f));renderGroups();}
+function setFilter(f){
+  filter=f;
+  ['all','falta','tenho','rep'].forEach(id=>document.getElementById('f-'+id)?.classList.toggle('on',id===f));
+  if(f==='rep'){
+    // Abre automaticamente todos que têm repetidas
+    SPECIALS_ALL.forEach(def=>{const hasRep=def.nums.some(n=>state[def.key][n].status==='repetida');if(hasRep)openGrps.add(def.key);});
+    SELS.forEach((_,gi)=>{const hasRep=Array.from({length:QTD},(_,k)=>k+1).some(i=>state[gi][i].status==='repetida');if(hasRep)openGrps.add(gi);});
+  }
+  renderGroups();
+}
 function setGrupoFilter(g){
   grupoFilter=g;
   document.querySelectorAll('#grp-filter-bar .gfchip').forEach(el=>el.classList.remove('on'));
@@ -587,12 +597,15 @@ function renderSpecialBlock(def,stateObj){
   const total=def.nums.length;
   if(filter==='tenho'&&ct===0)return'';
   if(filter==='falta'&&ct===total)return'';
+  const hasRep=def.nums.some(n=>stateObj[n].status==='repetida');
+  if(filter==='rep'&&!hasRep)return'';
   const open=openGrps.has(key),pct=Math.round(ct/total*100);
   let html=`<div class="grp${open?' open':''}" id="grp_${key}"><div class="gh" onclick="toggleGrp('${key}')"><span class="fl">${def.f}</span><span class="gn">${def.p}</span><div class="gmb"><div class="gmf" style="width:${pct}%"></div></div><span class="gc">${ct}/${total}</span><span class="chv">&#9660;</span></div><div class="sw"><div class="sg">`;
   def.nums.forEach(n=>{
     const{status:st,qty}=stateObj[n];
     if(filter==='tenho'&&st==='vazia')return;
     if(filter==='falta'&&st!=='vazia')return;
+    if(filter==='rep'&&st!=='repetida')return;
     html+=`<div class="stk${st!=='vazia'?' '+st:''}" id="stk_${key}_${n}" data-gi="${key}" data-i="${n}"><span class="si">${def.f}</span><span class="sn">${n}</span>`;
     if(st==='repetida')html+=`<div class="qty-ctrl"><button class="qty-btn" data-delta="-1" data-gi="${key}" data-i="${n}">-</button><span class="qty-num" id="qty_${key}_${n}">${qty}</span><button class="qty-btn" data-delta="1" data-gi="${key}" data-i="${n}">+</button></div>`;
     html+=`</div>`;
@@ -628,12 +641,15 @@ function renderGroups(){
       let ct=0;for(let i=1;i<=QTD;i++)if(state[gi][i].status!=='vazia')ct++;
       grpCt+=ct;grpTotal+=QTD;
       if(filter==='tenho'&&ct===0)return;if(filter==='falta'&&ct===QTD)return;
+      const hasRep2=Array.from({length:QTD},(_,k)=>k+1).some(i=>state[gi][i].status==='repetida');
+      if(filter==='rep'&&!hasRep2)return;
       grpAny=true;any=true;
       const open=openGrps.has(gi),pct=Math.round(ct/QTD*100);
       grpHtml+=`<div class="grp${open?' open':''}" id="grp_${gi}"><div class="gh" onclick="toggleGrp(${gi})"><span class="fl">${s.f}</span><span class="gn">${s.p}</span><div class="gmb"><div class="gmf" style="width:${pct}%"></div></div><span class="gc">${ct}/${QTD}</span><span class="chv">&#9660;</span></div><div class="sw"><div class="sg">`;
       for(let i=1;i<=QTD;i++){
         const{status:st,qty}=state[gi][i];
         if(filter==='tenho'&&st==='vazia')continue;if(filter==='falta'&&st!=='vazia')continue;
+        if(filter==='rep'&&st!=='repetida')continue;
         grpHtml+=`<div class="stk${st!=='vazia'?' '+st:''}" id="stk_${gi}_${i}" data-gi="${gi}" data-i="${i}"><span class="si">${s.f}</span><span class="sn">${i}</span>`;
         if(st==='repetida')grpHtml+=`<div class="qty-ctrl"><button class="qty-btn" data-delta="-1" data-gi="${gi}" data-i="${i}">-</button><span class="qty-num" id="qty_${gi}_${i}">${qty}</span><button class="qty-btn" data-delta="1" data-gi="${gi}" data-i="${i}">+</button></div>`;
         grpHtml+=`</div>`;
